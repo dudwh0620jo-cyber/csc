@@ -1,0 +1,127 @@
+﻿@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css");
+
+:root {
+  /* font family */
+  --font-main: "Pretendard Variable", sans-serif;
+
+  /* brand */
+  --color-main-01: #1a2146;
+  --color-main-02: #d91682;
+  --color-main-03: #1e3a8a;
+
+  /* background */
+  --color-bg-01: #f9fcff;
+
+  /* point */
+  --color-point-01: #003ce6;
+
+  /* text */
+  --color-text-01: #0f1012;
+
+  /* cal */
+  --color-cal-01: #3cf279;
+  --color-cal-02: #579ae2;
+  --color-cal-03: #ffd426;
+  --color-cal-04: #fe3333;
+
+  /* gray scale */
+  --color-gray-01: #ffffff;
+  --color-gray-02: #f5f5f5;
+  --color-gray-03: #e8e8e8;
+  --color-gray-04: #d6d6d6;
+  --color-gray-05: #c9c9c9;
+  --color-gray-06: #bcbcbc;
+  --color-gray-07: #868686;
+  --color-gray-08: #808080;
+  --color-gray-09: #7d7d7d;
+  --color-gray-10: #696969;
+  --color-gray-11: #575757;
+  --color-gray-12: #000000;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  color: var(--color-text-01);
+  background: var(--color-bg-01);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.app_layout {
+  min-height: 100vh;
+  background: var(--color-gray-01);
+}
+
+.status_bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  padding: 18px 30px 0 47px;
+}
+
+.status_bar_nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 22px;
+}
+
+.status_bar_time {
+  display: block;
+  min-width: 54px;
+  font-family: var(--font-main);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 22px;
+  color: var(--color-text-01);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.status_bar_levels {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  width: 95.5px;
+  min-height: 22px;
+}
+
+.status_bar_icon {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.status_bar_icon_cellular {
+  width: 20px;
+  height: 13px;
+}
+
+.status_bar_icon_wifi {
+  width: 18px;
+  height: 13px;
+}
+
+.status_bar_icon_battery {
+  width: 28px;
+  height: 13px;
+}

@@ -1,0 +1,137 @@
+.onboarding_page {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  color: var(--color-text-01);
+  background: var(--color-bg-01);
+}
+
+.onboarding_wrap {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--color-gray-01);
+  touch-action: pan-y;
+}
+
+.onboarding_track {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  transition: transform 360ms ease;
+  will-change: transform;
+}
+
+.onboarding_slide {
+  flex: 0 0 100%;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.onboarding_inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 65px 18px 0;
+}
+
+.onboarding_skip {
+  align-self: flex-end;
+  min-width: 31px;
+  margin: 0 10px 90px;
+  padding: 0;
+  border: 0;
+  font-family: var(--font-main);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+  color: var(--color-gray-07);
+  text-align: right;
+  white-space: nowrap;
+  background: transparent;
+  cursor: pointer;
+}
+
+.onboarding_visual {
+  width: min(270px, calc(100vw - 36px));
+  aspect-ratio: 1;
+  margin-bottom: 100px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--color-bg-01);
+}
+
+.onboarding_video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.6);
+}
+
+.onboarding_title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 58px;
+  margin: 0 0 109px;
+  font-family: var(--font-main);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.21;
+  letter-spacing: 0;
+  color: var(--color-text-01);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.onboarding_title_line {
+  display: block;
+}
+
+.onboarding_indicator {
+  position: absolute;
+  left: 50%;
+  bottom: 170px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transform: translateX(-50%);
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.onboarding_indicator_dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 20px;
+  background: var(--color-gray-06);
+  cursor: pointer;
+  transition:
+    width 180ms ease,
+    background-color 180ms ease;
+}
+
+.onboarding_indicator_dot_active {
+  width: 21px;
+  background: var(--color-main-03);
+}
+
+@media (max-width: 360px) {
+  .onboarding_visual {
+    width: min(360px, calc(100vw - 36px));
+  }
+
+  .onboarding_title {
+    font-size: 22px;
+  }
+}
