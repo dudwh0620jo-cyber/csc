@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import StatusBar from '../components/StatusBar'
+import backIcon from '../assets/svg/back.svg'
 import checkRoundIcon from '../assets/svg/check_round.svg'
 import scheduleLineIcon from '../assets/svg/schedule-line.svg'
 import {
@@ -132,7 +133,7 @@ function Signup({ onBack, onComplete }: SignupProps) {
         <div className="signup_header">
           <StatusBar />
           <button className="signup_back_button" type="button" aria-label="뒤로 가기" onClick={moveToPreviousStep}>
-            <span className="signup_back_icon" />
+            <img className="signup_back_icon" src={backIcon} alt="" />
           </button>
         </div>
 

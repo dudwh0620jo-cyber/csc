@@ -24,9 +24,10 @@ const slideMoveThreshold = 50
 
 type OnboardingProps = {
   onComplete: () => void
+  onDebugHome?: () => void
 }
 
-function Onboarding({ onComplete }: OnboardingProps) {
+function Onboarding({ onComplete, onDebugHome }: OnboardingProps) {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
   const [dragStartX, setDragStartX] = useState<number | null>(null)
 
@@ -67,6 +68,14 @@ function Onboarding({ onComplete }: OnboardingProps) {
     setDragStartX(null)
   }
 
+  const moveToHomeForDebug = () => {
+    if (currentSlideIndex !== 0) {
+      return
+    }
+
+    onDebugHome?.()
+  }
+
   return (
     <main className="onboarding_page">
       <StatusBar />
@@ -76,6 +85,7 @@ function Onboarding({ onComplete }: OnboardingProps) {
         onPointerDown={(event) => handleDragStart(event.clientX)}
         onPointerUp={(event) => handleDragEnd(event.clientX)}
         onPointerCancel={() => setDragStartX(null)}
+        onDoubleClick={moveToHomeForDebug}
       >
         <div
           className="onboarding_track"
