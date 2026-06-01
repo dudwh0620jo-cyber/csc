@@ -1,0 +1,223 @@
+.board_page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 90px 15px 100px;
+  background: var(--color-bg-01);
+}
+
+.board_header {
+  width: 100%;
+  padding-bottom: 16px;
+}
+
+.board_header h1 {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.22px;
+  color: var(--color-text-01);
+}
+
+.board_category_list {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding-bottom: 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.board_category_list::-webkit-scrollbar {
+  display: none;
+}
+
+.board_category {
+  flex: 0 0 auto;
+  padding: 9px 16px;
+  border: 1px solid var(--color-gray-05);
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.14px;
+  color: var(--color-gray-06);
+  background: var(--color-gray-01);
+  cursor: pointer;
+}
+
+.board_category_active {
+  border-color: var(--color-main-03);
+  color: var(--color-main-03);
+}
+
+.board_post_list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.board_post_card {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  width: 100%;
+  padding: 14px 11px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--color-gray-01);
+  box-shadow: 0 6px 20px rgba(9, 9, 9, 0.07);
+}
+
+.board_post_body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.board_post_top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.board_post_author {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  min-width: 0;
+}
+
+.board_post_avatar {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 100px;
+  background: #aaa;
+}
+
+.board_post_author div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 150px;
+  min-width: 0;
+}
+
+.board_post_author strong {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: normal;
+  color: #000;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.board_post_author time {
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: normal;
+  color: var(--color-gray-07);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.board_post_menu {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 23px;
+  height: 19px;
+  cursor: pointer;
+}
+
+.board_post_menu img {
+  width: 23px;
+  height: 19px;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(54%) sepia(0%) saturate(0%)
+    hue-rotate(193deg) brightness(92%) contrast(88%);
+}
+
+.board_post_content {
+  display: -webkit-box;
+  width: 100%;
+  height: 70px;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 14px;
+  color: #000;
+  white-space: pre-line;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+}
+
+.board_post_image_frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  border: 1px solid var(--color-gray-02);
+  border-radius: 10px;
+  background: #000;
+}
+
+.board_post_image_frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.board_post_meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.board_post_reaction,
+.board_post_views {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.board_post_reaction {
+  color: var(--color-gray-10);
+  cursor: pointer;
+}
+
+.board_post_views {
+  color: var(--color-gray-07);
+}
+
+.board_post_reaction img,
+.board_post_views img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.board_post_reaction img {
+  filter: brightness(0) saturate(100%) invert(54%) sepia(0%) saturate(0%)
+    hue-rotate(193deg) brightness(92%) contrast(88%);
+}
+
+.board_post_views img {
+  filter: brightness(0) saturate(100%) invert(58%) sepia(0%) saturate(0%)
+    hue-rotate(179deg) brightness(91%) contrast(83%);
+}

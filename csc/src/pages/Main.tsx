@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import BottomNavigation, { type BottomNavigationId } from '../components/BottomNavigation'
 import StatusBar from '../components/StatusBar'
+import BoardScreen from './Board'
+import ScheduleScreen from './Schedule'
 import alertIcon from '../assets/svg/alart.svg'
 import arrowFullIcon from '../assets/svg/arrow_full.svg'
 import backIcon from '../assets/svg/back.svg'
@@ -225,14 +227,47 @@ const timetableItems: Array<{
 
 function Main() {
   const [activeNavigationId, setActiveNavigationId] = useState<BottomNavigationId>('home')
+  const [isInstructorOverlayOpen, setIsInstructorOverlayOpen] = useState(false)
+  const [scheduleResetKey, setScheduleResetKey] = useState(0)
+  const visitedNavigationIdsRef = useRef<Set<BottomNavigationId>>(new Set())
+
+  useEffect(() => {
+    if (visitedNavigationIdsRef.current.has(activeNavigationId)) {
+      return
+    }
+
+    visitedNavigationIdsRef.current.add(activeNavigationId)
+    window.scrollTo({ top: 0, left: 0 })
+  }, [activeNavigationId])
+
+  const changeNavigation = (navigationId: BottomNavigationId) => {
+    if (navigationId === 'schedule') {
+      setScheduleResetKey((previousKey) => previousKey + 1)
+    }
+
+    setActiveNavigationId(navigationId)
+  }
 
   return (
     <main className="main_page">
       <StatusBar />
       <section className="main_content" aria-label={mainTabTitles[activeNavigationId]}>
-        {activeNavigationId === 'home' ? <HomeScreen /> : <PlaceholderScreen title={mainTabTitles[activeNavigationId]} />}
+        {activeNavigationId === 'home' && <HomeScreen />}
+        {activeNavigationId === 'schedule' && (
+          <ScheduleScreen resetKey={scheduleResetKey} onOpenInstructorInfo={() => setIsInstructorOverlayOpen(true)} />
+        )}
+        {activeNavigationId === 'board' && <BoardScreen />}
+        {activeNavigationId !== 'home' && activeNavigationId !== 'schedule' && activeNavigationId !== 'board' && (
+          <PlaceholderScreen title={mainTabTitles[activeNavigationId]} />
+        )}
       </section>
-      <BottomNavigation activeNavigationId={activeNavigationId} onChange={setActiveNavigationId} />
+      <BottomNavigation activeNavigationId={activeNavigationId} onChange={changeNavigation} />
+      {isInstructorOverlayOpen && (
+        <div className="main_overlay_page">
+          <StatusBar />
+          <FacilitiesScreen initialTabId="instructors" onBack={() => setIsInstructorOverlayOpen(false)} />
+        </div>
+      )}
     </main>
   )
 }
@@ -240,6 +275,7 @@ function Main() {
 function HomeScreen() {
   const [openTimetableId, setOpenTimetableId] = useState<TimetableId | null>('toddlers')
   const [isRenewalPopupOpen, setIsRenewalPopupOpen] = useState(false)
+  const [phonePopupTitle, setPhonePopupTitle] = useState('등록 연장 문의')
   const [isViewerStorePopupOpen, setIsViewerStorePopupOpen] = useState(false)
   const [homeDetailView, setHomeDetailView] = useState<'home' | 'facilities'>('home')
   const [initialInfoTabId, setInitialInfoTabId] = useState<InfoTabId>('facilities')
@@ -287,7 +323,14 @@ function HomeScreen() {
                 재등록까지 <strong>D-59</strong> 남았습니다.
               </p>
             </div>
-            <button className="home_extend_button" type="button" onClick={() => setIsRenewalPopupOpen(true)}>
+            <button
+              className="home_extend_button"
+              type="button"
+              onClick={() => {
+                setPhonePopupTitle('등록 연장 문의')
+                setIsRenewalPopupOpen(true)
+              }}
+            >
               등록 연장하기
             </button>
           </div>
@@ -411,7 +454,23 @@ function HomeScreen() {
         </div>
           </section>
 
-          <section className="home_contact" aria-label="상담 문의">
+          <section
+            className="home_contact"
+            aria-label="상담 문의"
+            role="button"
+            tabIndex={0}
+            onClick={() => {
+              setPhonePopupTitle('상담 문의')
+              setIsRenewalPopupOpen(true)
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault()
+                setPhonePopupTitle('상담 문의')
+                setIsRenewalPopupOpen(true)
+              }
+            }}
+          >
         <div className="home_contact_left">
           <img src={phoneIcon} alt="" />
           <span>상담 문의</span>
@@ -455,7 +514,9 @@ function HomeScreen() {
       )}
 
       <AnimatePresence>
-        {isRenewalPopupOpen && <RenewalPhonePopup onClose={() => setIsRenewalPopupOpen(false)} />}
+        {isRenewalPopupOpen && (
+          <RenewalPhonePopup title={phonePopupTitle} onClose={() => setIsRenewalPopupOpen(false)} />
+        )}
       </AnimatePresence>
       <AnimatePresence>
         {isViewerStorePopupOpen && (
@@ -480,6 +541,24 @@ type FacilitiesScreenProps = {
 function FacilitiesScreen({ initialTabId, onBack }: FacilitiesScreenProps) {
   const [activeInfoTabId, setActiveInfoTabId] = useState<InfoTabId>(initialTabId)
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0 })
+  }, [activeInfoTabId])
+
+  const openShareSheet = async () => {
+    const shareData = {
+      title: infoTabTitles[activeInfoTabId],
+      url: window.location.href,
+    }
+
+    if (navigator.share) {
+      await navigator.share(shareData)
+      return
+    }
+
+    await navigator.clipboard?.writeText(shareData.url)
+  }
+
   return (
     <section className="facilities_page" aria-labelledby="facilities_page_title">
       <header className="facilities_header">
@@ -487,7 +566,7 @@ function FacilitiesScreen({ initialTabId, onBack }: FacilitiesScreenProps) {
           <img src={backIcon} alt="" />
         </button>
         <h1 id="facilities_page_title">{infoTabTitles[activeInfoTabId]}</h1>
-        <button className="facilities_share_button" type="button" aria-label="공유하기">
+        <button className="facilities_share_button" type="button" aria-label="공유하기" onClick={openShareSheet}>
           <img src={shareIcon} alt="" />
         </button>
       </header>
@@ -620,7 +699,7 @@ function ViewerStorePopup({ onClose, onConfirm }: ViewerStorePopupProps) {
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id="viewer_store_title">모바일 뷰어 설치 안내</h2>
-        <p>기기에 맞는 스토어의 모바일 뷰어 설치 페이지로 이동합니다.</p>
+        <p>모바일 뷰어 설치 페이지로 이동합니다.</p>
         <div className="home_viewer_popup_actions">
           <button type="button" onClick={onClose}>
             닫기
@@ -635,10 +714,11 @@ function ViewerStorePopup({ onClose, onConfirm }: ViewerStorePopupProps) {
 }
 
 type RenewalPhonePopupProps = {
+  title: string
   onClose: () => void
 }
 
-function RenewalPhonePopup({ onClose }: RenewalPhonePopupProps) {
+function RenewalPhonePopup({ title, onClose }: RenewalPhonePopupProps) {
   return (
     <motion.div
       className="home_popup_overlay"
@@ -659,15 +739,20 @@ function RenewalPhonePopup({ onClose }: RenewalPhonePopupProps) {
         transition={{ duration: 0.18, ease: 'easeOut' }}
         onClick={(event) => event.stopPropagation()}
       >
-        <h2 id="renewal_phone_title">등록 연장 문의</h2>
+        <h2 id="renewal_phone_title">{title}</h2>
         <p>아래 번호로 상담 문의해 주세요.</p>
         <div className="home_phone_popup_numbers">
           <a href="tel:0335226337">033 - 522 - 6337</a>
           <a href="tel:0335224337">033 - 522 - 4337</a>
         </div>
-        <button className="home_phone_popup_close" type="button" onClick={onClose}>
-          확인
-        </button>
+        <div className="home_phone_popup_close">
+          <button type="button" onClick={onClose}>
+            닫기
+          </button>
+          <button type="button" disabled>
+            전화
+          </button>
+        </div>
       </motion.div>
     </motion.div>
   )

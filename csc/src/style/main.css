@@ -11,6 +11,18 @@
   background: var(--color-bg-01);
 }
 
+.main_overlay_page {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow-y: auto;
+  background: var(--color-bg-01);
+}
+
+.main_overlay_page .status_bar {
+  z-index: 2;
+}
+
 .home_screen {
   width: 100%;
   padding-bottom: 83px;
@@ -1077,15 +1089,42 @@
 }
 
 .home_phone_popup_close {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
   align-self: stretch;
-  padding: 12px;
+}
+
+.home_phone_popup_close button,
+.home_phone_popup_close a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
   border-radius: 8px;
   font-size: 16px;
   font-weight: 700;
   line-height: 1;
+  cursor: pointer;
+}
+
+.home_phone_popup_close button {
+  color: var(--color-text-01);
+  background: var(--color-gray-03);
+}
+
+.home_phone_popup_close a,
+.home_phone_popup_close button:last-child {
   color: var(--color-gray-01);
   background: var(--color-main-03);
   cursor: pointer;
+}
+
+.home_phone_popup_close button:disabled {
+  color: var(--color-gray-06);
+  background: var(--color-gray-03);
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
 .home_viewer_popup {

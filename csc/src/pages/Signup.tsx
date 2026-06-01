@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import SignupBottomProfile from '../components/SignupBottomProfile'
 import StatusBar from '../components/StatusBar'
 import backIcon from '../assets/svg/back.svg'
 import checkRoundIcon from '../assets/svg/check_round.svg'
@@ -334,21 +335,11 @@ function Signup({ onBack, onComplete }: SignupProps) {
           </div>
         )}
 
-        <div className="signup_bottom signup_bottom_profile">
-          <button
-            className="signup_next_button"
-            type="button"
-            disabled={isNextButtonDisabled}
-            onClick={moveToNextStep}
-          >
-            다음
-          </button>
-          {currentStep === 'profile' && (
-            <button className="signup_add_button" type="button" disabled>
-              저장하고 추가로 등록하기
-            </button>
-          )}
-        </div>
+        <SignupBottomProfile
+          currentStep={currentStep}
+          isNextButtonDisabled={isNextButtonDisabled}
+          onNext={moveToNextStep}
+        />
       </section>
     </main>
   )
