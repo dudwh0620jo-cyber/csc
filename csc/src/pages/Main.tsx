@@ -1,6 +1,45 @@
 import { useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import BottomNavigation, { type BottomNavigationId } from '../components/BottomNavigation'
 import StatusBar from '../components/StatusBar'
+import alertIcon from '../assets/svg/alart.svg'
+import arrowFullIcon from '../assets/svg/arrow_full.svg'
+import backIcon from '../assets/svg/back.svg'
+import calendarIcon from '../assets/svg/pajamas_calendar.svg'
+import phoneIcon from '../assets/svg/akar-icons_phone.svg'
+import shareIcon from '../assets/svg/share.svg'
+import togetherIcon from '../assets/svg/together.svg'
+import viewerArrowIcon from '../assets/svg/memory_arrow-up-bold.svg'
+import facilitiesImage from '../assets/home/facilities.png'
+import homeBackgroundImage from '../assets/home/home_background.png'
+import instructorImage from '../assets/home/instructor.png'
+import profileImage from '../assets/home/profile.png'
+import swimAdultsImage from '../assets/home/swim_ad.png'
+import swimElementaryImage from '../assets/home/swim_el.png'
+import swimGoodImage from '../assets/home/swim_good.png'
+import swimMastersImage from '../assets/home/swim_ma.png'
+import swimToddlersImage from '../assets/home/swim_to.png'
+import facility01Image from '../assets/facilities/fa01.png'
+import facility02Image from '../assets/facilities/fa02.png'
+import facility03Image from '../assets/facilities/fa03.png'
+import facility04Image from '../assets/facilities/fa04.png'
+import facility05Image from '../assets/facilities/fa05.png'
+import facility06Image from '../assets/facilities/fa06.png'
+import facility07Image from '../assets/facilities/fa07.png'
+import facility08Image from '../assets/facilities/fa08.png'
+import facility09Image from '../assets/facilities/fa09.png'
+import facility10Image from '../assets/facilities/fa10.png'
+import facility11Image from '../assets/facilities/fa11.png'
+import facility13Image from '../assets/facilities/fa13.png'
+import facility14Image from '../assets/facilities/fa14.png'
+import facility15Image from '../assets/facilities/fa15.png'
+import instructor01Image from '../assets/facilities/in01.png'
+import instructor02Image from '../assets/facilities/in02.png'
+import instructor03Image from '../assets/facilities/in03.png'
+import instructor04Image from '../assets/facilities/in04.png'
+import instructor05Image from '../assets/facilities/in05.png'
+import instructor06Image from '../assets/facilities/in06.png'
+import logoImage from '../assets/logo/logo_l.png'
 import '../style/main.css'
 
 const mainTabTitles: Record<BottomNavigationId, string> = {
@@ -10,17 +49,689 @@ const mainTabTitles: Record<BottomNavigationId, string> = {
   my: '마이페이지',
 }
 
+const mobileViewerPlayStoreUrl =
+  'https://play.google.com/store/search?q=%EB%AA%A8%EB%B0%94%EC%9D%BC%20%EB%B7%B0%EC%96%B4&c=apps'
+const mobileViewerAppStoreUrl =
+  'https://apps.apple.com/kr/app/%EA%B5%AC-%EB%AA%A8%EB%B0%94%EC%9D%BC%EB%B7%B0%EC%96%B4/id770575783'
+
+type TimetableId = 'toddlers' | 'elementary' | 'adults' | 'masters'
+type InfoTabId = 'facilities' | 'instructors' | 'necessity'
+
+const infoTabs: Array<{ id: InfoTabId; label: string }> = [
+  { id: 'facilities', label: '시설 소개' },
+  { id: 'instructors', label: '운영진·강사 소개' },
+  { id: 'necessity', label: '수영의 필요성' },
+]
+
+const infoTabTitles: Record<InfoTabId, string> = {
+  facilities: '시설 소개',
+  instructors: '운영진·강사 소개',
+  necessity: '수영의 필요성',
+}
+
+const facilitySections = [
+  {
+    number: '01',
+    title: '안내 데스크 & 상담 공간',
+    images: [facility01Image, facility02Image],
+    descriptions: [
+      '입구 우측 인포데스크 및 상담 공간 운영',
+      '프로그램 및 강사진 정보는 내부 디스플레이를 통해 안내',
+      '수영장 내부는 통유리 구조로 개방감 있게 관람 가능',
+    ],
+  },
+  {
+    number: '02',
+    title: '케어존',
+    images: [facility03Image, facility04Image],
+    descriptions: ['탈의실 입구 앞 케어존 운영', '수업 전후 드라이 및 케어 진행', '어린이 전용 안마 의자 비치'],
+  },
+  {
+    number: '03',
+    title: '수영장',
+    images: [facility05Image, facility06Image, facility07Image, facility08Image],
+    descriptions: ['청결 상태를 상시 유지', '개인별 맞춤 수업 관리 가능', '넓은 동선과 구조로 쾌적한 이용'],
+  },
+  {
+    number: '04',
+    title: '수질 관리 시스템',
+    images: [facility09Image],
+    descriptions: [
+      '친환경 해수풀 시스템 운영',
+      '전기분해 방식으로 피부 및 눈 자극 최소화',
+      '여과기 순환 1일 8~10회 유지',
+      '수온 31~33°C 유지 (사계절 일정 온도)',
+    ],
+  },
+  {
+    number: '05',
+    title: '탈의실 & 샤워실',
+    images: [facility10Image, facility11Image, facility13Image, facility14Image],
+    descriptions: [
+      '남녀 탈의실 및 샤워실 완전 분리',
+      '어린이 눈높이에 맞춘 시설 설계',
+      '개인별 신발장 및 탈의 바구니 제공',
+      '어린이 전용 샴푸 및 바디워시 구비',
+      '미끄럼 방지 바닥 적용',
+    ],
+  },
+  {
+    number: '06',
+    title: '안전 소통창',
+    images: [facility15Image],
+    descriptions: ['수영장 내부와 외부를 연결하는 소통창 운영', '비상 상황 시 빠른 대응 가능', '전반적인 시설 안전 중심 설계'],
+  },
+]
+
+const instructorImages = [
+  instructor01Image,
+  instructor02Image,
+  instructor03Image,
+  instructor04Image,
+  instructor05Image,
+  instructor06Image,
+]
+
+const swimmingNeedSections = [
+  {
+    number: '01',
+    title: '자신의 안전을 지키는 능력',
+    placeholders: ['수상 안전 사진', '구조 교육 사진'],
+    descriptions: ['위급 상황에서 스스로를 보호할 수 있는 필수 기술', '기본적인 수영 능력은 생존과 직결'],
+  },
+  {
+    number: '02',
+    title: '관절에 부담이 적은 전신 운동',
+    placeholders: ['수영 동작 사진', '수영 자세 사진'],
+    descriptions: ['물속에서 이루어져 신체 충격이 현저히 적음', '남녀노소 누구나 부담 없이 시작할 수 있음'],
+  },
+  {
+    number: '03',
+    title: '건강과 체력 향상',
+    placeholders: ['건강한 수영 사진', '체력 향상 사진'],
+    descriptions: ['심폐 기능을 강화하고 전신 근육을 고르게 발달', '규칙적인 수영으로 건강한 신체 유지'],
+  },
+  {
+    number: '04',
+    title: '평생 이어지는 기술',
+    placeholders: ['수영 교습 사진', '성인 수업 사진'],
+    descriptions: ['일시적인 운동이 아닌 평생 활용할 수 있는 능력', '언제 어디서든 활용 가능한 중요한 생활 기술'],
+  },
+  {
+    number: '05',
+    title: '다양한 활동의 기초',
+    placeholders: ['수상 스포츠 사진', '레저 활동 사진'],
+    descriptions: ['다양한 수상 스포츠로 이어지는 기본 능력', '더 넓은 여가 활동의 든든한 기반'],
+  },
+]
+
+const timetableItems: Array<{
+  id: TimetableId
+  title: string
+  capacity: string
+  accentClassName: string
+  image: string
+  lines: string[]
+}> = [
+  {
+    id: 'toddlers',
+    title: '유아반',
+    capacity: '1:4 책임담임제',
+    accentClassName: 'home_timetable_name_toddlers',
+    image: swimToddlersImage,
+    lines: [
+      '주 1회/2회/3회 선택 가능',
+      '(유아반은 체험 후 입회 신청 가능)',
+      '월~금: 15~20시 (50분 수업/10분 케어)',
+      '토: 9~13시 (50분 수업/10분 케어)',
+      '셔틀 지원',
+    ],
+  },
+  {
+    id: 'elementary',
+    title: '초등반',
+    capacity: '1:5 책임담임제',
+    accentClassName: 'home_timetable_name_elementary',
+    image: swimElementaryImage,
+    lines: [
+      '주 1회/2회/3회 선택 가능',
+      '월~금: 15~20시 (50분 수업/10분 케어)',
+      '토: 9~13시 (50분 수업/10분 케어)',
+      '셔틀 지원',
+    ],
+  },
+  {
+    id: 'adults',
+    title: '성인반',
+    capacity: '정원 10명',
+    accentClassName: 'home_timetable_name_adults',
+    image: swimAdultsImage,
+    lines: [
+      '주 2회/3회/5회 선택 가능',
+      '(2회: 화/목, 3회: 월/수/금, 5회: 월~금)',
+      '새벽반: 6시 30분(50분 수업)',
+      '저녁반: 21시 10분(50분 수업)',
+    ],
+  },
+  {
+    id: 'masters',
+    title: '마스터즈\n엘리트반',
+    capacity: '정원 10명',
+    accentClassName: 'home_timetable_name_masters',
+    image: swimMastersImage,
+    lines: ['주 3회', '월/수/금: 20시', '셔틀 지원'],
+  },
+]
+
 function Main() {
-  const [activeNavigationId, setActiveNavigationId] = useState<BottomNavigationId>('schedule')
+  const [activeNavigationId, setActiveNavigationId] = useState<BottomNavigationId>('home')
 
   return (
     <main className="main_page">
       <StatusBar />
       <section className="main_content" aria-label={mainTabTitles[activeNavigationId]}>
-        <h1 className="main_title">{mainTabTitles[activeNavigationId]}</h1>
+        {activeNavigationId === 'home' ? <HomeScreen /> : <PlaceholderScreen title={mainTabTitles[activeNavigationId]} />}
       </section>
       <BottomNavigation activeNavigationId={activeNavigationId} onChange={setActiveNavigationId} />
     </main>
+  )
+}
+
+function HomeScreen() {
+  const [openTimetableId, setOpenTimetableId] = useState<TimetableId | null>('toddlers')
+  const [isRenewalPopupOpen, setIsRenewalPopupOpen] = useState(false)
+  const [isViewerStorePopupOpen, setIsViewerStorePopupOpen] = useState(false)
+  const [homeDetailView, setHomeDetailView] = useState<'home' | 'facilities'>('home')
+  const [initialInfoTabId, setInitialInfoTabId] = useState<InfoTabId>('facilities')
+
+  const getMobileViewerStoreUrl = () => {
+    const userAgent = navigator.userAgent.toLowerCase()
+    const platform = navigator.platform.toLowerCase()
+    const isAppleDevice =
+      /iphone|ipad|ipod|macintosh|mac os x/.test(userAgent) || /iphone|ipad|ipod|mac/.test(platform)
+
+    return isAppleDevice ? mobileViewerAppStoreUrl : mobileViewerPlayStoreUrl
+  }
+
+  const openMobileViewerStore = () => {
+    const storeUrl = getMobileViewerStoreUrl()
+    const openedWindow = window.open(storeUrl, '_blank', 'noopener,noreferrer')
+
+    if (!openedWindow) {
+      window.location.href = storeUrl
+    }
+  }
+
+  return (
+    <div className="home_screen">
+      {homeDetailView === 'facilities' ? (
+        <FacilitiesScreen initialTabId={initialInfoTabId} onBack={() => setHomeDetailView('home')} />
+      ) : (
+        <>
+          <header className="home_header">
+        <img className="home_header_background" src={homeBackgroundImage} alt="" />
+        <div className="home_top">
+          <img className="home_logo" src={logoImage} alt="CSC" />
+          <button className="home_alert_button" type="button" aria-label="알림">
+            <img src={alertIcon} alt="" />
+          </button>
+        </div>
+
+        <div className="home_profile_card">
+          <div className="home_profile_text">
+            <div className="home_profile_copy">
+              <h1>
+                <strong>안도훈</strong> 학부모님
+              </h1>
+              <p>
+                재등록까지 <strong>D-59</strong> 남았습니다.
+              </p>
+            </div>
+            <button className="home_extend_button" type="button" onClick={() => setIsRenewalPopupOpen(true)}>
+              등록 연장하기
+            </button>
+          </div>
+          <img className="home_profile_image" src={profileImage} alt="" />
+        </div>
+          </header>
+
+          <section className="home_next_lesson" aria-labelledby="next_lesson_title">
+        <div className="home_next_box">
+          <p className="home_section_kicker" id="next_lesson_title">
+            <img src={calendarIcon} alt="" />
+            다음 수업
+          </p>
+          <div className="home_next_time">
+            <strong>2026. 4. 7 (화) 16:00~16:50</strong>
+            <span>D-DAY</span>
+          </div>
+        </div>
+          </section>
+
+          <section className="home_section home_intro" aria-labelledby="academy_title">
+        <h2 id="academy_title">CSC 스위밍 아카데미</h2>
+        <div className="home_intro_grid">
+          <InfoCard
+            image={facilitiesImage}
+            title="시설 소개"
+            description="안전하고 쾌적한 시설"
+            onClick={() => {
+              setInitialInfoTabId('facilities')
+              setHomeDetailView('facilities')
+            }}
+          />
+          <InfoCard
+            image={instructorImage}
+            title="운영진·강사 소개"
+            description="운영진·강사진의 체계 지도"
+            onClick={() => {
+              setInitialInfoTabId('instructors')
+              setHomeDetailView('facilities')
+            }}
+          />
+        </div>
+        <button
+          className="home_need_card"
+          type="button"
+          onClick={() => {
+            setInitialInfoTabId('necessity')
+            setHomeDetailView('facilities')
+          }}
+        >
+          <div>
+            <h3>수영의 필요성</h3>
+            <p>건강과 안전을 위한 필수 운동</p>
+          </div>
+          <div className="home_need_image_wrap">
+            <img src={swimGoodImage} alt="" />
+          </div>
+        </button>
+          </section>
+
+          <section className="home_section home_timetable" aria-labelledby="timetable_title">
+        <h2 id="timetable_title">반별 시간표 안내</h2>
+        <div className="home_timetable_box">
+          {timetableItems.map((item) => {
+            const isOpen = item.id === openTimetableId
+
+            return (
+              <article className="home_timetable_item" key={item.id}>
+                <div className="home_timetable_name_wrap">
+                  <h3 className={`home_timetable_name ${item.accentClassName}`}>{item.title}</h3>
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.img
+                        className="home_timetable_image"
+                        src={item.image}
+                        alt=""
+                        initial={{ opacity: 0, scale: 0.88, y: -4 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.88, y: -4 }}
+                        transition={{ duration: 0.22, ease: 'easeOut' }}
+                      />
+                    )}
+                  </AnimatePresence>
+                </div>
+                <div className="home_timetable_info">
+                  <p className="home_timetable_capacity">{item.capacity}</p>
+                  <button
+                    className={isOpen ? 'home_timetable_toggle home_timetable_toggle_open' : 'home_timetable_toggle'}
+                    type="button"
+                    aria-expanded={isOpen}
+                    onClick={() => setOpenTimetableId(isOpen ? null : item.id)}
+                  >
+                    <motion.img
+                      className="home_timetable_toggle_icon"
+                      src={arrowFullIcon}
+                      alt=""
+                      animate={{ rotate: isOpen ? 180 : 0 }}
+                      transition={{ duration: 0.22, ease: 'easeOut' }}
+                    />
+                    시간표
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.ul
+                        className="home_timetable_detail"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.24, ease: 'easeOut' }}
+                      >
+                        {item.lines.map((line) => (
+                          <li key={line}>{line}</li>
+                        ))}
+                      </motion.ul>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </article>
+            )
+          })}
+        </div>
+          </section>
+
+          <section className="home_contact" aria-label="상담 문의">
+        <div className="home_contact_left">
+          <img src={phoneIcon} alt="" />
+          <span>상담 문의</span>
+        </div>
+        <div className="home_contact_divider" />
+        <div className="home_contact_right">
+          <p>
+            입회 시 <strong>수영모자</strong>, <strong>수영가방</strong> 증정
+          </p>
+          <div className="home_contact_numbers">
+            <strong>033 - 522 - 6337</strong>
+            <strong>033 - 522 - 4337</strong>
+          </div>
+        </div>
+          </section>
+
+          <section className="home_section home_cctv" aria-labelledby="cctv_title">
+        <div className="home_cctv_top">
+          <h2 id="cctv_title">실시간 수업 모습</h2>
+          <button type="button" onClick={() => setIsViewerStorePopupOpen(true)}>
+            모바일 뷰어 바로가기
+          </button>
+        </div>
+        <div className="home_cctv_box">
+          <LoginInfo title="1차 로그인" rows={[['ID', 'csc-6337'], ['PW', 'Admin6337']]} />
+          <img className="home_viewer_arrow" src={viewerArrowIcon} alt="" />
+          <LoginInfo
+            title="2차 로그인"
+            rows={[
+              ['기기', 'CSC아카데미수영장'],
+              ['ID', 'admin'],
+              ['PW', 'Admin001'],
+            ]}
+          />
+        </div>
+        <p className="home_cctv_note">
+          로그인 후 <strong>바로 확인</strong> 가능
+        </p>
+          </section>
+        </>
+      )}
+
+      <AnimatePresence>
+        {isRenewalPopupOpen && <RenewalPhonePopup onClose={() => setIsRenewalPopupOpen(false)} />}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isViewerStorePopupOpen && (
+          <ViewerStorePopup
+            onClose={() => setIsViewerStorePopupOpen(false)}
+            onConfirm={() => {
+              setIsViewerStorePopupOpen(false)
+              openMobileViewerStore()
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+type FacilitiesScreenProps = {
+  initialTabId: InfoTabId
+  onBack: () => void
+}
+
+function FacilitiesScreen({ initialTabId, onBack }: FacilitiesScreenProps) {
+  const [activeInfoTabId, setActiveInfoTabId] = useState<InfoTabId>(initialTabId)
+
+  return (
+    <section className="facilities_page" aria-labelledby="facilities_page_title">
+      <header className="facilities_header">
+        <button className="facilities_back_button" type="button" aria-label="홈으로 돌아가기" onClick={onBack}>
+          <img src={backIcon} alt="" />
+        </button>
+        <h1 id="facilities_page_title">{infoTabTitles[activeInfoTabId]}</h1>
+        <button className="facilities_share_button" type="button" aria-label="공유하기">
+          <img src={shareIcon} alt="" />
+        </button>
+      </header>
+
+      <nav className="facilities_tabs" aria-label="소개 탭">
+        {infoTabs.map((tab) => (
+          <button
+            className={tab.id === activeInfoTabId ? 'facilities_tab facilities_tab_active' : 'facilities_tab'}
+            type="button"
+            aria-current={tab.id === activeInfoTabId ? 'page' : undefined}
+            key={tab.id}
+            onClick={() => setActiveInfoTabId(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </nav>
+
+      {activeInfoTabId === 'facilities' && <FacilitiesIntroContent />}
+      {activeInfoTabId === 'instructors' && <InstructorsIntroContent />}
+      {activeInfoTabId === 'necessity' && <SwimmingNeedIntroContent />}
+    </section>
+  )
+}
+
+function FacilitiesIntroContent() {
+  return (
+    <div className="facilities_content">
+      {facilitySections.map((section) => (
+        <article className="facilities_card" key={section.number}>
+          <div className="facilities_card_header">
+            <span>{section.number}</span>
+            <h2>{section.title}</h2>
+          </div>
+          <div
+            className={
+              section.images.length === 1 ? 'facilities_image_grid facilities_image_grid_single' : 'facilities_image_grid'
+            }
+          >
+            {section.images.map((image) => (
+              <img src={image} alt="" key={image} />
+            ))}
+          </div>
+          <ul className="facilities_description_list">
+            {section.descriptions.map((description) => (
+              <li key={description}>{description}</li>
+            ))}
+          </ul>
+        </article>
+      ))}
+    </div>
+  )
+}
+
+function InstructorsIntroContent() {
+  return (
+    <div className="facilities_content facilities_instructor_content">
+      <article className="instructor_intro_card">
+        <div className="instructor_intro_header">
+          <span className="instructor_intro_icon" aria-hidden="true">
+            <img src={togetherIcon} alt="" />
+          </span>
+          <div>
+            <h2>운영진 및 강사진</h2>
+            <p>총 6명의 전문 강사진</p>
+          </div>
+        </div>
+        <div className="instructor_image_list">
+          {instructorImages.map((image) => (
+            <img src={image} alt="" key={image} />
+          ))}
+        </div>
+      </article>
+    </div>
+  )
+}
+
+function SwimmingNeedIntroContent() {
+  return (
+    <div className="facilities_content swimming_need_content">
+      {swimmingNeedSections.map((section) => (
+        <article className="swimming_need_section_card" key={section.number}>
+          <div className="swimming_need_card_header">
+            <span>{section.number}</span>
+            <h2>{section.title}</h2>
+          </div>
+          <div className="swimming_need_image_grid">
+            {section.placeholders.map((placeholder) => (
+              <div className="swimming_need_placeholder" key={placeholder}>
+                <span className="swimming_need_placeholder_icon" aria-hidden="true" />
+                <p>{placeholder}</p>
+              </div>
+            ))}
+          </div>
+          <ul className="swimming_need_description_list">
+            {section.descriptions.map((description) => (
+              <li key={description}>{description}</li>
+            ))}
+          </ul>
+        </article>
+      ))}
+    </div>
+  )
+}
+
+type ViewerStorePopupProps = {
+  onClose: () => void
+  onConfirm: () => void
+}
+
+function ViewerStorePopup({ onClose, onConfirm }: ViewerStorePopupProps) {
+  return (
+    <motion.div
+      className="home_popup_overlay"
+      role="presentation"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="home_viewer_popup"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="viewer_store_title"
+        initial={{ opacity: 0, scale: 0.94, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.94, y: 12 }}
+        transition={{ duration: 0.18, ease: 'easeOut' }}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <h2 id="viewer_store_title">모바일 뷰어 설치 안내</h2>
+        <p>기기에 맞는 스토어의 모바일 뷰어 설치 페이지로 이동합니다.</p>
+        <div className="home_viewer_popup_actions">
+          <button type="button" onClick={onClose}>
+            닫기
+          </button>
+          <button type="button" onClick={onConfirm}>
+            설치하러 가기
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+type RenewalPhonePopupProps = {
+  onClose: () => void
+}
+
+function RenewalPhonePopup({ onClose }: RenewalPhonePopupProps) {
+  return (
+    <motion.div
+      className="home_popup_overlay"
+      role="presentation"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="home_phone_popup"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="renewal_phone_title"
+        initial={{ opacity: 0, scale: 0.94, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.94, y: 12 }}
+        transition={{ duration: 0.18, ease: 'easeOut' }}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <h2 id="renewal_phone_title">등록 연장 문의</h2>
+        <p>아래 번호로 상담 문의해 주세요.</p>
+        <div className="home_phone_popup_numbers">
+          <a href="tel:0335226337">033 - 522 - 6337</a>
+          <a href="tel:0335224337">033 - 522 - 4337</a>
+        </div>
+        <button className="home_phone_popup_close" type="button" onClick={onClose}>
+          확인
+        </button>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+type InfoCardProps = {
+  image: string
+  title: string
+  description: string
+  onClick?: () => void
+}
+
+function InfoCard({ image, title, description, onClick }: InfoCardProps) {
+  const content = (
+    <>
+      <img src={image} alt="" />
+      <div>
+        <h3>{title}</h3>
+        <p>{description}</p>
+      </div>
+    </>
+  )
+
+  if (onClick) {
+    return (
+      <button className="home_info_card" type="button" onClick={onClick}>
+        {content}
+      </button>
+    )
+  }
+
+  return (
+    <article className="home_info_card">
+      {content}
+    </article>
+  )
+}
+
+type LoginInfoProps = {
+  title: string
+  rows: Array<[string, string]>
+}
+
+function LoginInfo({ title, rows }: LoginInfoProps) {
+  return (
+    <div className="home_login_info">
+      <h3>{title}</h3>
+      <dl>
+        {rows.map(([label, value]) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  )
+}
+
+function PlaceholderScreen({ title }: { title: string }) {
+  return (
+    <div className="main_placeholder">
+      <h1 className="main_title">{title}</h1>
+    </div>
   )
 }
 

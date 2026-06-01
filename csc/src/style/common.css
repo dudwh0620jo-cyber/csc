@@ -39,10 +39,6 @@
   --color-gray-12: #000000;
 }
 
-* {
-  box-sizing: border-box;
-}
-
 html,
 body,
 #root {
@@ -50,13 +46,11 @@ body,
 }
 
 body {
-  margin: 0;
   font-family: var(--font-main);
   color: var(--color-text-01);
   background: var(--color-bg-01);
 }
 
-button,
 input,
 textarea,
 select {

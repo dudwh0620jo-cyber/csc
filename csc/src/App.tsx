@@ -21,7 +21,7 @@ function App() {
     return <Login onSignup={() => setCurrentView('signup')} />
   }
 
-  return <Onboarding onComplete={() => setCurrentView('login')} />
+  return <Onboarding onComplete={() => setCurrentView('login')} onDebugHome={() => setCurrentView('main')} />
 }
 
 export default App
