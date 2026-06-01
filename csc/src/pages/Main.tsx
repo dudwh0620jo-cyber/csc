@@ -5,6 +5,7 @@ import StatusBar from '../components/StatusBar'
 import BoardScreen from './Board'
 import ScheduleScreen from './Schedule'
 import alertIcon from '../assets/svg/alart.svg'
+import alertArrowIcon from '../assets/svg/arrrrrow.svg'
 import arrowFullIcon from '../assets/svg/arrow_full.svg'
 import backIcon from '../assets/svg/back.svg'
 import calendarIcon from '../assets/svg/pajamas_calendar.svg'
@@ -12,6 +13,7 @@ import phoneIcon from '../assets/svg/akar-icons_phone.svg'
 import shareIcon from '../assets/svg/share.svg'
 import togetherIcon from '../assets/svg/together.svg'
 import viewerArrowIcon from '../assets/svg/memory_arrow-up-bold.svg'
+import writeIcon from '../assets/svg/write.svg'
 import facilitiesImage from '../assets/home/facilities.png'
 import homeBackgroundImage from '../assets/home/home_background.png'
 import instructorImage from '../assets/home/instructor.png'
@@ -41,7 +43,10 @@ import instructor03Image from '../assets/facilities/in03.png'
 import instructor04Image from '../assets/facilities/in04.png'
 import instructor05Image from '../assets/facilities/in05.png'
 import instructor06Image from '../assets/facilities/in06.png'
+import waveImage from '../assets/home/wave.png'
 import logoImage from '../assets/logo/logo_l.png'
+import noticeProfile02Image from '../assets/notice/profile02.jpg'
+import noticeProfile04Image from '../assets/notice/profile04.png'
 import '../style/main.css'
 
 const mainTabTitles: Record<BottomNavigationId, string> = {
@@ -55,9 +60,15 @@ const mobileViewerPlayStoreUrl =
   'https://play.google.com/store/search?q=%EB%AA%A8%EB%B0%94%EC%9D%BC%20%EB%B7%B0%EC%96%B4&c=apps'
 const mobileViewerAppStoreUrl =
   'https://apps.apple.com/kr/app/%EA%B5%AC-%EB%AA%A8%EB%B0%94%EC%9D%BC%EB%B7%B0%EC%96%B4/id770575783'
+const homeNextLessonWeekdays = [1, 3]
+const homeNextLessonStartTime = '16:00'
+const homeNextLessonEndTime = '16:50'
+const homeDayLabels = ['일', '월', '화', '수', '목', '금', '토']
 
 type TimetableId = 'toddlers' | 'elementary' | 'adults' | 'masters'
 type InfoTabId = 'facilities' | 'instructors' | 'necessity'
+type HomeDetailView = 'home' | 'facilities' | 'alerts'
+type AlertTabId = 'notice' | 'ride'
 
 const infoTabs: Array<{ id: InfoTabId; label: string }> = [
   { id: 'facilities', label: '시설 소개' },
@@ -70,6 +81,80 @@ const infoTabTitles: Record<InfoTabId, string> = {
   instructors: '운영진·강사 소개',
   necessity: '수영의 필요성',
 }
+
+const alertItems = [
+  {
+    id: 'notice-01',
+    category: '휴뮤/등록 안내',
+    title: '6월 수업 재등록 기간',
+    author: '변금주 매니저',
+    date: '5월 18일',
+    profileImage: noticeProfile02Image,
+  },
+  {
+    id: 'notice-02',
+    category: '공지',
+    title: '회원분들을 위한 수영 교육 콘텐츠 안내',
+    author: '오수빈 강사',
+    date: '5월 3일',
+    profileImage: noticeProfile04Image,
+  },
+]
+
+const rideAlertGroups = [
+  {
+    month: '2026년 6월',
+    items: [
+      {
+        id: 'ride-01',
+        category: '하차 안내',
+        title: '안도훈 학생이 천곡 어린이집에서\n안전하게 하차하였습니다.',
+        author: '1호차',
+        date: '6월 1일',
+      },
+      {
+        id: 'ride-02',
+        category: '하차 안내',
+        title: '안도훈 학생이 천곡 어린이집에서\n안전하게 승차하였습니다.',
+        author: '1호차',
+        date: '6월 1일',
+      },
+    ],
+  },
+  {
+    month: '2026년 5월',
+    items: [
+      {
+        id: 'ride-03',
+        category: '하차 안내',
+        title: '안도훈 학생이 천곡 어린이집에서\n안전하게 하차하였습니다.',
+        author: '1호차',
+        date: '5월 27일',
+      },
+      {
+        id: 'ride-04',
+        category: '하차 안내',
+        title: '안도훈 학생이 천곡 어린이집에서\n안전하게 승차하였습니다.',
+        author: '1호차',
+        date: '5월 27일',
+      },
+      {
+        id: 'ride-05',
+        category: '하차 안내',
+        title: '안도훈 학생이 천곡 어린이집에서\n안전하게 하차하였습니다.',
+        author: '1호차',
+        date: '5월 25일',
+      },
+      {
+        id: 'ride-06',
+        category: '하차 안내',
+        title: '안도훈 학생이 천곡 어린이집에서\n안전하게 승차하였습니다.',
+        author: '1호차',
+        date: '5월 25일',
+      },
+    ],
+  },
+]
 
 const facilitySections = [
   {
@@ -225,6 +310,33 @@ const timetableItems: Array<{
   },
 ]
 
+const addHomeDateDays = (date: Date, amount: number) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate() + amount)
+
+const isHomeNextLessonDay = (date: Date) => homeNextLessonWeekdays.includes(date.getDay())
+
+const getHomeNextLesson = () => {
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const todayLessonEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 16, 50, 0)
+  let candidate = today
+
+  if (now > todayLessonEnd) {
+    candidate = addHomeDateDays(candidate, 1)
+  }
+
+  while (!isHomeNextLessonDay(candidate)) {
+    candidate = addHomeDateDays(candidate, 1)
+  }
+
+  const dayDiff = Math.round((candidate.getTime() - today.getTime()) / 86400000)
+
+  return {
+    dateText: `${candidate.getFullYear()}. ${candidate.getMonth() + 1}. ${candidate.getDate()} (${homeDayLabels[candidate.getDay()]}) ${homeNextLessonStartTime}~${homeNextLessonEndTime}`,
+    dDayText: dayDiff === 0 ? 'D-DAY' : `D-${dayDiff}`,
+  }
+}
+
 function Main() {
   const [activeNavigationId, setActiveNavigationId] = useState<BottomNavigationId>('home')
   const [isInstructorOverlayOpen, setIsInstructorOverlayOpen] = useState(false)
@@ -257,7 +369,11 @@ function Main() {
           <ScheduleScreen resetKey={scheduleResetKey} onOpenInstructorInfo={() => setIsInstructorOverlayOpen(true)} />
         )}
         {activeNavigationId === 'board' && <BoardScreen />}
-        {activeNavigationId !== 'home' && activeNavigationId !== 'schedule' && activeNavigationId !== 'board' && (
+        {activeNavigationId === 'my' && <MyPageScreen />}
+        {activeNavigationId !== 'home' &&
+          activeNavigationId !== 'schedule' &&
+          activeNavigationId !== 'board' &&
+          activeNavigationId !== 'my' && (
           <PlaceholderScreen title={mainTabTitles[activeNavigationId]} />
         )}
       </section>
@@ -272,13 +388,65 @@ function Main() {
   )
 }
 
+const myPageMenuItems = [
+  { label: '신청 내역', disabled: false, danger: false },
+  { label: '알림 설정', disabled: true, danger: false },
+  { label: '이용 약관', disabled: true, danger: false },
+  { label: '개인정보 처리방침', disabled: true, danger: false },
+  { label: '로그아웃', disabled: false, danger: false },
+  { label: '회원 탈퇴', disabled: false, danger: true },
+]
+
+function MyPageScreen() {
+  return (
+    <section className="my_page" aria-labelledby="my_page_title">
+      <div className="my_page_inner">
+        <header className="my_header">
+          <h1 id="my_page_title">마이페이지</h1>
+        </header>
+
+        <section className="my_profile" aria-label="내 정보">
+          <div className="my_profile_info">
+            <img className="my_profile_image" src={profileImage} alt="" />
+            <div className="my_profile_text">
+              <p>
+                <strong>안도훈</strong> 학부모님
+              </p>
+              <span>010-1234-5678</span>
+            </div>
+          </div>
+          <button className="my_edit_button" type="button" aria-label="내 정보 수정">
+            <img src={writeIcon} alt="" />
+          </button>
+        </section>
+
+        <nav className="my_menu" aria-label="마이페이지 메뉴">
+          {myPageMenuItems.map((item) => (
+            <button
+              className={`my_menu_item ${item.disabled ? 'my_menu_item_disabled' : ''} ${
+                item.danger ? 'my_menu_item_danger' : ''
+              }`}
+              type="button"
+              disabled={item.disabled}
+              key={item.label}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
+      </div>
+    </section>
+  )
+}
+
 function HomeScreen() {
   const [openTimetableId, setOpenTimetableId] = useState<TimetableId | null>('toddlers')
   const [isRenewalPopupOpen, setIsRenewalPopupOpen] = useState(false)
   const [phonePopupTitle, setPhonePopupTitle] = useState('등록 연장 문의')
   const [isViewerStorePopupOpen, setIsViewerStorePopupOpen] = useState(false)
-  const [homeDetailView, setHomeDetailView] = useState<'home' | 'facilities'>('home')
+  const [homeDetailView, setHomeDetailView] = useState<HomeDetailView>('home')
   const [initialInfoTabId, setInitialInfoTabId] = useState<InfoTabId>('facilities')
+  const homeNextLesson = getHomeNextLesson()
 
   const getMobileViewerStoreUrl = () => {
     const userAgent = navigator.userAgent.toLowerCase()
@@ -300,7 +468,9 @@ function HomeScreen() {
 
   return (
     <div className="home_screen">
-      {homeDetailView === 'facilities' ? (
+      {homeDetailView === 'alerts' ? (
+        <AlertScreen onBack={() => setHomeDetailView('home')} />
+      ) : homeDetailView === 'facilities' ? (
         <FacilitiesScreen initialTabId={initialInfoTabId} onBack={() => setHomeDetailView('home')} />
       ) : (
         <>
@@ -308,7 +478,7 @@ function HomeScreen() {
         <img className="home_header_background" src={homeBackgroundImage} alt="" />
         <div className="home_top">
           <img className="home_logo" src={logoImage} alt="CSC" />
-          <button className="home_alert_button" type="button" aria-label="알림">
+          <button className="home_alert_button" type="button" aria-label="알림" onClick={() => setHomeDetailView('alerts')}>
             <img src={alertIcon} alt="" />
           </button>
         </div>
@@ -345,8 +515,8 @@ function HomeScreen() {
             다음 수업
           </p>
           <div className="home_next_time">
-            <strong>2026. 4. 7 (화) 16:00~16:50</strong>
-            <span>D-DAY</span>
+            <strong>{homeNextLesson.dateText}</strong>
+            <span>{homeNextLesson.dDayText}</span>
           </div>
         </div>
           </section>
@@ -545,20 +715,6 @@ function FacilitiesScreen({ initialTabId, onBack }: FacilitiesScreenProps) {
     window.scrollTo({ top: 0, left: 0 })
   }, [activeInfoTabId])
 
-  const openShareSheet = async () => {
-    const shareData = {
-      title: infoTabTitles[activeInfoTabId],
-      url: window.location.href,
-    }
-
-    if (navigator.share) {
-      await navigator.share(shareData)
-      return
-    }
-
-    await navigator.clipboard?.writeText(shareData.url)
-  }
-
   return (
     <section className="facilities_page" aria-labelledby="facilities_page_title">
       <header className="facilities_header">
@@ -566,9 +722,7 @@ function FacilitiesScreen({ initialTabId, onBack }: FacilitiesScreenProps) {
           <img src={backIcon} alt="" />
         </button>
         <h1 id="facilities_page_title">{infoTabTitles[activeInfoTabId]}</h1>
-        <button className="facilities_share_button" type="button" aria-label="공유하기" onClick={openShareSheet}>
-          <img src={shareIcon} alt="" />
-        </button>
+        <FacilitiesShareMenu title={infoTabTitles[activeInfoTabId]} />
       </header>
 
       <nav className="facilities_tabs" aria-label="소개 탭">
@@ -588,6 +742,232 @@ function FacilitiesScreen({ initialTabId, onBack }: FacilitiesScreenProps) {
       {activeInfoTabId === 'facilities' && <FacilitiesIntroContent />}
       {activeInfoTabId === 'instructors' && <InstructorsIntroContent />}
       {activeInfoTabId === 'necessity' && <SwimmingNeedIntroContent />}
+    </section>
+  )
+}
+
+function FacilitiesShareMenu({ title }: { title: string }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [feedback, setFeedback] = useState('')
+  const shareUrl = window.location.href
+
+  const copyShareUrl = async () => {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(shareUrl)
+      return
+    }
+
+    const textArea = document.createElement('textarea')
+    textArea.value = shareUrl
+    textArea.setAttribute('readonly', '')
+    textArea.style.position = 'fixed'
+    textArea.style.top = '-9999px'
+    document.body.appendChild(textArea)
+    textArea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textArea)
+  }
+
+  const runMenuAction = async (action: () => Promise<void>, message: string) => {
+    await action()
+    setFeedback(message)
+    window.setTimeout(() => setFeedback(''), 1400)
+    setIsOpen(false)
+  }
+
+  const sharePage = async () => {
+    if (navigator.share) {
+      await navigator.share({
+        title,
+        url: shareUrl,
+      })
+      return
+    }
+
+    await copyShareUrl()
+  }
+
+  return (
+    <div className="facilities_share_wrap">
+      <button
+        className="facilities_share_button"
+        type="button"
+        aria-label="공유 메뉴"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen((current) => !current)}
+      >
+        <img src={shareIcon} alt="" />
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="facilities_share_menu"
+            role="menu"
+            aria-label="공유 메뉴 항목"
+            initial={{ opacity: 0, scale: 0.96, y: -4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: -4 }}
+            transition={{ duration: 0.16, ease: 'easeOut' }}
+          >
+            <button type="button" role="menuitem" onClick={() => runMenuAction(copyShareUrl, '주소 복사됨')}>
+              주소 복사
+            </button>
+            <button type="button" role="menuitem" onClick={() => runMenuAction(sharePage, '공유 완료')}>
+              공유하기
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {feedback && (
+          <motion.span
+            className="facilities_share_feedback"
+            initial={{ opacity: 0, y: -2 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -2 }}
+            transition={{ duration: 0.14, ease: 'easeOut' }}
+          >
+            {feedback}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+function AlertScreen({ onBack }: { onBack: () => void }) {
+  const [activeAlertTabId, setActiveAlertTabId] = useState<AlertTabId>('notice')
+  const [readAlertIds, setReadAlertIds] = useState<string[]>([
+    ...alertItems.map((item) => item.id),
+    ...rideAlertGroups.flatMap((group) =>
+      group.items.filter((item) => item.date !== '6월 1일').map((item) => item.id),
+    ),
+  ])
+  const noticeUnreadIds = alertItems.map((item) => item.id).filter((id) => !readAlertIds.includes(id))
+  const rideUnreadIds = rideAlertGroups
+    .flatMap((group) => group.items.map((item) => item.id))
+    .filter((id) => !readAlertIds.includes(id))
+  const activeUnreadIds = activeAlertTabId === 'notice' ? noticeUnreadIds : rideUnreadIds
+  const hasNoticeUnread = noticeUnreadIds.length > 0
+  const hasRideUnread = rideUnreadIds.length > 0
+  const isReadAllDisabled = activeUnreadIds.length === 0
+
+  const markActiveTabAsRead = () => {
+    if (isReadAllDisabled) return
+    setReadAlertIds((current) => Array.from(new Set([...current, ...activeUnreadIds])))
+  }
+
+  return (
+    <section className="alert_page" aria-labelledby="alert_page_title">
+      <header className="alert_header">
+        <button className="alert_back_button" type="button" aria-label="홈으로 돌아가기" onClick={onBack}>
+          <img src={backIcon} alt="" />
+        </button>
+        <h1 id="alert_page_title">알림</h1>
+        <span aria-hidden="true" />
+      </header>
+
+      <button className="alert_promo_card" type="button" disabled aria-disabled="true">
+        <div>
+          <strong>웨이브프롬 송파구 수영장</strong>
+          <span>
+            신규모집 확인하러 가기
+            <img className="alert_promo_arrow" src={alertArrowIcon} alt="" />
+          </span>
+        </div>
+        <img className="alert_promo_image" src={waveImage} alt="" />
+      </button>
+
+      <div className="alert_tabs">
+        <button
+          className={`alert_tab ${activeAlertTabId === 'notice' ? 'alert_tab_active' : ''}`}
+          type="button"
+          onClick={() => setActiveAlertTabId('notice')}
+        >
+          공지사항
+          {hasNoticeUnread && <span className="alert_tab_badge" aria-label="읽지 않은 공지사항" />}
+          {activeAlertTabId === 'notice' && <motion.span className="alert_tab_indicator" layoutId="alert_tab_indicator" />}
+        </button>
+        <button
+          className={`alert_tab ${activeAlertTabId === 'ride' ? 'alert_tab_active alert_tab_ride_active' : ''}`}
+          type="button"
+          onClick={() => setActiveAlertTabId('ride')}
+        >
+          승하차
+          {hasRideUnread && <span className="alert_tab_badge" aria-label="읽지 않은 승하차 알림" />}
+          {activeAlertTabId === 'ride' && <motion.span className="alert_tab_indicator" layoutId="alert_tab_indicator" />}
+        </button>
+        <button className="alert_read_all" type="button" disabled={isReadAllDisabled} onClick={markActiveTabAsRead}>
+          모두 읽음
+        </button>
+      </div>
+
+      <AnimatePresence mode="wait">
+        {activeAlertTabId === 'notice' ? (
+          <motion.section
+            className="alert_list_section"
+            aria-labelledby="alert_month_title"
+            key="notice"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+          >
+            <h2 id="alert_month_title">2026년 5월</h2>
+            <div className="alert_list">
+              {alertItems.map((item) => (
+                <article className="alert_item" key={item.id}>
+                  <img className="alert_item_profile" src={item.profileImage} alt="" />
+                  <div className="alert_item_text">
+                    <h3>{item.category}</h3>
+                    <p>{item.title}</p>
+                    <span>{item.author}</span>
+                  </div>
+                  <time>{item.date}</time>
+                  {!readAlertIds.includes(item.id) && <span className="alert_item_badge" aria-label="읽지 않음" />}
+                </article>
+              ))}
+            </div>
+          </motion.section>
+        ) : (
+          <motion.div
+            className="alert_ride_sections"
+            key="ride"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+          >
+            {rideAlertGroups.map((group) => (
+              <section className="alert_list_section alert_ride_section" aria-label={group.month} key={group.month}>
+                <h2>{group.month}</h2>
+                <div className="alert_list">
+                  {group.items.map((item) => (
+                    <article className="alert_item alert_ride_item" key={item.id}>
+                      <div className="alert_ride_logo">
+                        <img src={logoImage} alt="" />
+                      </div>
+                      <div className="alert_item_text alert_ride_text">
+                        <h3>{item.category}</h3>
+                        <p>
+                          {item.title.split('\n').map((line) => (
+                            <span key={line}>{line}</span>
+                          ))}
+                        </p>
+                        <span>{item.author}</span>
+                      </div>
+                      <time>{item.date}</time>
+                      {!readAlertIds.includes(item.id) && <span className="alert_item_badge" aria-label="읽지 않음" />}
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }
