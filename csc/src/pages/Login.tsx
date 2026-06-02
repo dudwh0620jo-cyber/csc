@@ -70,7 +70,6 @@ function Login({ onSignup }: LoginProps) {
                       className="login_input"
                       type="text"
                       placeholder="아이디 입력"
-                      defaultValue="swimming@gmail.com"
                       autoComplete="off"
                       name="login_email_field"
                     />
@@ -82,7 +81,6 @@ function Login({ onSignup }: LoginProps) {
                         className="login_input login_password_input"
                         type={isPasswordVisible ? 'text' : 'password'}
                         placeholder="비밀번호 입력"
-                        defaultValue="Swim1234$$"
                         autoComplete="new-password"
                         name="login_password_field"
                       />

@@ -3,6 +3,7 @@ import StatusBar from '../components/StatusBar'
 import onboardingFirstVideo from '../assets/onbording/onboarding01.mp4'
 import onboardingSecondVideo from '../assets/onbording/onboarding02.mp4'
 import onboardingThirdVideo from '../assets/onbording/onboarding03.mp4'
+import handUpIcon from '../assets/svg/bxs_hand-up.svg'
 import '../style/onboarding.css'
 
 const onboardingItems = [
@@ -145,6 +146,14 @@ function Onboarding({ onComplete, onDebugHome }: OnboardingProps) {
             />
           ))}
         </div>
+        {currentSlideIndex === 0 && (
+          <div className="onboarding_swipe_hint" aria-hidden="true">
+            <span className="onboarding_swipe_motion">
+              <img className="onboarding_swipe_icon" src={handUpIcon} alt="" />
+            </span>
+            <span className="onboarding_swipe_text">스와이프로 이동하기</span>
+          </div>
+        )}
       </section>
     </main>
   )

@@ -10,6 +10,8 @@ import backIcon from '../assets/svg/back.svg'
 import filterIcon from '../assets/svg/filter.svg'
 import type {
   AvailableScheduleDotType,
+  CompletedLessonApplication,
+  CompletedShuttleApplication,
   ScheduleClassFilter,
   ScheduleDay,
   ScheduleDotType,
@@ -21,6 +23,7 @@ import type {
   ShuttleSchedule,
   ShuttleScheduleSelection,
 } from '../types/schedule'
+import type { SignupProfile } from '../data/signupData'
 import { isScheduleApplicationClosed } from '../utils/scheduleDate'
 import '../style/schedule.css'
 
@@ -164,12 +167,70 @@ const scheduleLessonTypeByClassName: Record<string, AvailableScheduleDotType> = 
   유아반: 'toddlers',
   초등반: 'elementary',
   성인반: 'adults',
+  마스터즈: 'masters',
+  '엘리트 마스터즈반': 'masters',
 }
 
 const getScheduleLessonType = (lesson: ScheduleLesson) => scheduleLessonTypeByClassName[lesson.className] ?? null
 
-const getAvailableScheduleTypes = (date: Date) =>
-  new Set((getScheduleDots(date) ?? []).filter((dot): dot is AvailableScheduleDotType => dot !== 'past'))
+const parseStudentBirthYear = (studentBirthDate: string) => {
+  const birthYear = Number(studentBirthDate.split('/')[0]?.trim())
+
+  return Number.isFinite(birthYear) ? birthYear : null
+}
+
+const getAllowedScheduleTypesByProfile = (signupProfile: SignupProfile) => {
+  const birthYear = parseStudentBirthYear(signupProfile.studentBirthDate)
+
+  if (birthYear !== null && birthYear >= 2020 && birthYear <= 2022) {
+    return new Set<AvailableScheduleDotType>(['toddlers', 'masters'])
+  }
+
+  if (birthYear !== null && birthYear >= 2013 && birthYear <= 2019) {
+    return new Set<AvailableScheduleDotType>(['elementary', 'masters'])
+  }
+
+  if (birthYear !== null && birthYear <= 2007) {
+    return new Set<AvailableScheduleDotType>(['adults'])
+  }
+
+  return new Set<AvailableScheduleDotType>(['toddlers', 'elementary', 'adults', 'masters'])
+}
+
+const getAvailableScheduleTypes = (date: Date) => {
+  const dateScheduleTypes = new Set(
+    (getScheduleDots(date) ?? []).filter((dot): dot is AvailableScheduleDotType => dot !== 'past'),
+  )
+
+  if (dateScheduleTypes.has('toddlers') || dateScheduleTypes.has('elementary')) {
+    dateScheduleTypes.add('masters')
+  }
+
+  return dateScheduleTypes
+}
+
+const getScheduleApplicationKey = (date: Date, time: string, lesson: ScheduleLesson) =>
+  [
+    date.getFullYear(),
+    date.getMonth() + 1,
+    date.getDate(),
+    time,
+    lesson.className,
+    lesson.instructor,
+    lesson.lane,
+  ].join('|')
+
+const matchesSelectedClassFilters = (lesson: ScheduleLesson, selectedClassFilters: ScheduleClassFilter[]) => {
+  if (selectedClassFilters.includes('전체')) {
+    return true
+  }
+
+  if (getScheduleLessonType(lesson) === 'masters') {
+    return selectedClassFilters.includes('마스터즈') || selectedClassFilters.includes('엘리트')
+  }
+
+  return selectedClassFilters.includes(lesson.className as ScheduleClassFilter)
+}
 
 const scheduleSections: ScheduleSection[] = [
   {
@@ -235,11 +296,20 @@ const shuttleScheduleItems: ShuttleSchedule[] = [
 ]
 
 type ScheduleScreenProps = {
+  onCompleteLessonApplication: (application: CompletedLessonApplication) => void
+  onCompleteShuttleApplication: (application: CompletedShuttleApplication) => void
   onOpenInstructorInfo?: () => void
   resetKey?: number
+  signupProfile: SignupProfile
 }
 
-function ScheduleScreen({ onOpenInstructorInfo, resetKey = 0 }: ScheduleScreenProps) {
+function ScheduleScreen({
+  onCompleteLessonApplication,
+  onCompleteShuttleApplication,
+  onOpenInstructorInfo,
+  resetKey = 0,
+  signupProfile,
+}: ScheduleScreenProps) {
   const [schedulePageMode, setSchedulePageMode] = useState<SchedulePageMode>('shuttle')
   const [viewMode, setViewMode] = useState<ScheduleViewMode>('month')
   const [visibleDate, setVisibleDate] = useState(() => getScheduleToday())
@@ -247,6 +317,7 @@ function ScheduleScreen({ onOpenInstructorInfo, resetKey = 0 }: ScheduleScreenPr
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [reservationSelection, setReservationSelection] = useState<ScheduleReservationSelection | null>(null)
   const [shuttleSelection, setShuttleSelection] = useState<ShuttleScheduleSelection | null>(null)
+  const [completedApplicationKeys, setCompletedApplicationKeys] = useState<string[]>([])
   const [selectedClassFilters, setSelectedClassFilters] = useState<ScheduleClassFilter[]>(['전체'])
   const [selectedInstructorFilters, setSelectedInstructorFilters] = useState<ScheduleInstructorFilter[]>(['전체'])
 
@@ -269,6 +340,7 @@ function ScheduleScreen({ onOpenInstructorInfo, resetKey = 0 }: ScheduleScreenPr
   const isPastSelectedDate = selectedDate < scheduleToday
   const isSelectedDateApplicationClosed = isScheduleApplicationClosed(selectedDate)
   const hasSelectedDateShuttleSchedule = Boolean(getShuttleScheduleDots(selectedDate)?.length)
+  const allowedScheduleTypes = getAllowedScheduleTypesByProfile(signupProfile)
   const availableScheduleTypes = isPastSelectedDate || isSelectedDateApplicationClosed
     ? new Set<AvailableScheduleDotType>(['toddlers', 'elementary', 'adults'])
     : getAvailableScheduleTypes(selectedDate)
@@ -278,7 +350,7 @@ function ScheduleScreen({ onOpenInstructorInfo, resetKey = 0 }: ScheduleScreenPr
       lessons: section.lessons.filter((lesson) => {
         const lessonType = getScheduleLessonType(lesson)
         const isAvailableClass = lessonType !== null && availableScheduleTypes.has(lessonType)
-        const matchesClass = selectedClassFilters.includes('전체') || selectedClassFilters.includes(lesson.className as ScheduleClassFilter)
+        const matchesClass = matchesSelectedClassFilters(lesson, selectedClassFilters)
         const matchesInstructor =
           selectedInstructorFilters.includes('전체') ||
           selectedInstructorFilters.includes(lesson.instructor as ScheduleInstructorFilter)
@@ -386,7 +458,19 @@ function ScheduleScreen({ onOpenInstructorInfo, resetKey = 0 }: ScheduleScreenPr
               <ul>
                 {section.lessons.map((lesson, index) => (
                   <ScheduleLessonItem
-                    isDisabled={isSelectedDateApplicationClosed}
+                    isCompleted={completedApplicationKeys.includes(
+                      getScheduleApplicationKey(selectedDate, section.time, lesson),
+                    )}
+                    isDisabled={
+                      isSelectedDateApplicationClosed ||
+                      !allowedScheduleTypes.has(getScheduleLessonType(lesson) as AvailableScheduleDotType)
+                    }
+                    disabledLabel={
+                      isSelectedDateApplicationClosed ||
+                      allowedScheduleTypes.has(getScheduleLessonType(lesson) as AvailableScheduleDotType)
+                        ? '신청 마감'
+                        : '신청 불가'
+                    }
                     lesson={lesson}
                     key={`${section.time}-${lesson.className}-${lesson.lane}-${index}`}
                     onApply={() => setReservationSelection({ date: selectedDate, lesson, time: section.time })}
@@ -402,11 +486,11 @@ function ScheduleScreen({ onOpenInstructorInfo, resetKey = 0 }: ScheduleScreenPr
             <ShuttleScheduleItem
               isDisabled={isSelectedDateApplicationClosed}
               kind={item.kind}
-              name={item.name}
+              name={signupProfile.studentName}
               place={item.place}
               time={item.time}
               key={`${item.kind}-${item.place}`}
-              onChange={() => setShuttleSelection({ date: selectedDate, shuttle: item })}
+              onChange={() => setShuttleSelection({ date: selectedDate, shuttle: { ...item, name: signupProfile.studentName } })}
             />
           ))}
         </ul>
@@ -435,12 +519,45 @@ function ScheduleScreen({ onOpenInstructorInfo, resetKey = 0 }: ScheduleScreenPr
       {reservationSelection && (
         <ScheduleReservationDetail
           selection={reservationSelection}
+          onComplete={() => {
+            const completedApplicationKey = getScheduleApplicationKey(
+              reservationSelection.date,
+              reservationSelection.time,
+              reservationSelection.lesson,
+            )
+
+            setCompletedApplicationKeys((currentKeys) =>
+              currentKeys.includes(completedApplicationKey)
+                ? currentKeys
+                : [...currentKeys, completedApplicationKey],
+            )
+            onCompleteLessonApplication({
+              ...reservationSelection,
+              id: completedApplicationKey,
+            })
+          }}
           onBack={() => setReservationSelection(null)}
           onOpenInstructorInfo={onOpenInstructorInfo}
         />
       )}
       {shuttleSelection && (
-        <ShuttleScheduleChangeDetail selection={shuttleSelection} onBack={() => setShuttleSelection(null)} />
+        <ShuttleScheduleChangeDetail
+          selection={shuttleSelection}
+          onBack={() => setShuttleSelection(null)}
+          onComplete={(changeText) =>
+            onCompleteShuttleApplication({
+              ...shuttleSelection,
+              changeText,
+              id: getScheduleApplicationKey(shuttleSelection.date, changeText, {
+                className: shuttleSelection.shuttle.kind,
+                instructor: shuttleSelection.shuttle.name,
+                lane: shuttleSelection.shuttle.place,
+                reserved: 0,
+                capacity: 0,
+              }),
+            })
+          }
+        />
       )}
     </div>
   )

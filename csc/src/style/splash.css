@@ -1,0 +1,35 @@
+.splash_page {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--color-gray-01);
+}
+
+.splash_logo {
+  display: block;
+  width: min(390px, 92vw);
+  height: auto;
+  object-fit: contain;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.splash_page_leaving .splash_logo {
+  animation: splashLogoExit 700ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes splashLogoExit {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.16);
+  }
+}

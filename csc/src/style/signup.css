@@ -194,6 +194,13 @@
   border-color: var(--color-main-03);
 }
 
+.signup_user_type_disabled {
+  color: var(--color-gray-08);
+  background: var(--color-gray-02);
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .signup_profile_container {
   height: calc(100vh - 83px - 94px);
   overflow-y: auto;
@@ -257,6 +264,12 @@
   line-height: 1;
   letter-spacing: 0;
   color: var(--color-gray-08);
+}
+
+.signup_required_mark {
+  margin-left: 2px;
+  font-weight: 700;
+  color: var(--color-main-03);
 }
 
 .signup_info_field_filled .signup_info_label {
@@ -387,6 +400,10 @@
   line-height: 1;
   letter-spacing: 0;
   color: var(--color-text-01);
+}
+
+.signup_verified_message_notice {
+  color: var(--color-gray-09);
 }
 
 .signup_bottom {

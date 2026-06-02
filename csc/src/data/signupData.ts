@@ -38,18 +38,20 @@ export const signupUserTypeOptions = [
   {
     id: 'parent',
     label: '학부모',
+    disabled: false,
   },
   {
     id: 'student_adult',
     label: '학생/성인반',
+    disabled: true,
   },
 ] as const
 
 export const initialSignupProfile: SignupProfile = {
-  studentName: '',
-  studentBirthDate: '',
-  studentGender: '',
-  studentPhone: '',
-  parentRelation: '',
-  parentPhone: '',
+  studentName: '안도훈',
+  studentBirthDate: '2021 / 4 / 24',
+  studentGender: 'male',
+  studentPhone: '010-8765-4321',
+  parentRelation: 'mother',
+  parentPhone: '010-1234-5678',
 }

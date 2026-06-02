@@ -370,6 +370,13 @@
   cursor: not-allowed;
 }
 
+.schedule_lesson_apply_completed,
+.schedule_lesson_apply_completed:disabled {
+  color: var(--color-gray-01);
+  background: rgba(38, 75, 158, 0.5);
+  background: color-mix(in srgb, var(--color-main-03) 50%, transparent);
+}
+
 .schedule_lesson_bottom {
   display: flex;
   align-items: center;

@@ -11,6 +11,7 @@ import backIcon from '../assets/svg/back.svg'
 import calendarIcon from '../assets/svg/pajamas_calendar.svg'
 import phoneIcon from '../assets/svg/akar-icons_phone.svg'
 import shareIcon from '../assets/svg/share.svg'
+import timeIcon from '../assets/svg/time.svg'
 import togetherIcon from '../assets/svg/together.svg'
 import viewerArrowIcon from '../assets/svg/memory_arrow-up-bold.svg'
 import writeIcon from '../assets/svg/write.svg'
@@ -47,6 +48,8 @@ import waveImage from '../assets/home/wave.png'
 import logoImage from '../assets/logo/logo_l.png'
 import noticeProfile02Image from '../assets/notice/profile02.jpg'
 import noticeProfile04Image from '../assets/notice/profile04.png'
+import type { SignupProfile } from '../data/signupData'
+import type { CompletedLessonApplication, CompletedShuttleApplication } from '../types/schedule'
 import '../style/main.css'
 
 const mainTabTitles: Record<BottomNavigationId, string> = {
@@ -337,8 +340,28 @@ const getHomeNextLesson = () => {
   }
 }
 
-function Main() {
-  const [activeNavigationId, setActiveNavigationId] = useState<BottomNavigationId>('home')
+type MainProps = {
+  completedLessonApplications: CompletedLessonApplication[]
+  completedShuttleApplications: CompletedShuttleApplication[]
+  initialNavigationId?: BottomNavigationId
+  signupProfile: SignupProfile
+  onCompleteLessonApplication: (application: CompletedLessonApplication) => void
+  onCompleteShuttleApplication: (application: CompletedShuttleApplication) => void
+  onExitToLogin: () => void
+  onEditProfile: () => void
+}
+
+function Main({
+  completedLessonApplications,
+  completedShuttleApplications,
+  initialNavigationId = 'home',
+  signupProfile,
+  onCompleteLessonApplication,
+  onCompleteShuttleApplication,
+  onExitToLogin,
+  onEditProfile,
+}: MainProps) {
+  const [activeNavigationId, setActiveNavigationId] = useState<BottomNavigationId>(initialNavigationId)
   const [isInstructorOverlayOpen, setIsInstructorOverlayOpen] = useState(false)
   const [scheduleResetKey, setScheduleResetKey] = useState(0)
   const visitedNavigationIdsRef = useRef<Set<BottomNavigationId>>(new Set())
@@ -364,12 +387,26 @@ function Main() {
     <main className="main_page">
       <StatusBar />
       <section className="main_content" aria-label={mainTabTitles[activeNavigationId]}>
-        {activeNavigationId === 'home' && <HomeScreen />}
+        {activeNavigationId === 'home' && <HomeScreen signupProfile={signupProfile} />}
         {activeNavigationId === 'schedule' && (
-          <ScheduleScreen resetKey={scheduleResetKey} onOpenInstructorInfo={() => setIsInstructorOverlayOpen(true)} />
+          <ScheduleScreen
+            resetKey={scheduleResetKey}
+            signupProfile={signupProfile}
+            onCompleteLessonApplication={onCompleteLessonApplication}
+            onCompleteShuttleApplication={onCompleteShuttleApplication}
+            onOpenInstructorInfo={() => setIsInstructorOverlayOpen(true)}
+          />
         )}
         {activeNavigationId === 'board' && <BoardScreen />}
-        {activeNavigationId === 'my' && <MyPageScreen />}
+        {activeNavigationId === 'my' && (
+          <MyPageScreen
+            completedLessonApplications={completedLessonApplications}
+            completedShuttleApplications={completedShuttleApplications}
+            signupProfile={signupProfile}
+            onExitToLogin={onExitToLogin}
+            onEditProfile={onEditProfile}
+          />
+        )}
         {activeNavigationId !== 'home' &&
           activeNavigationId !== 'schedule' &&
           activeNavigationId !== 'board' &&
@@ -397,49 +434,321 @@ const myPageMenuItems = [
   { label: '회원 탈퇴', disabled: false, danger: true },
 ]
 
-function MyPageScreen() {
+type MyPageScreenProps = {
+  completedLessonApplications: CompletedLessonApplication[]
+  completedShuttleApplications: CompletedShuttleApplication[]
+  signupProfile: SignupProfile
+  onExitToLogin: () => void
+  onEditProfile: () => void
+}
+
+function MyPageScreen({
+  completedLessonApplications,
+  completedShuttleApplications,
+  signupProfile,
+  onExitToLogin,
+  onEditProfile,
+}: MyPageScreenProps) {
+  const [isApplicationHistoryOpen, setIsApplicationHistoryOpen] = useState(false)
+  const [myConfirmPopupType, setMyConfirmPopupType] = useState<'logout' | 'withdraw' | null>(null)
+
+  if (isApplicationHistoryOpen) {
+    return (
+      <ApplicationHistoryScreen
+        lessonApplications={completedLessonApplications}
+        shuttleApplications={completedShuttleApplications}
+        onBack={() => setIsApplicationHistoryOpen(false)}
+      />
+    )
+  }
+
   return (
-    <section className="my_page" aria-labelledby="my_page_title">
-      <div className="my_page_inner">
-        <header className="my_header">
-          <h1 id="my_page_title">마이페이지</h1>
-        </header>
+    <>
+      <section className="my_page" aria-labelledby="my_page_title">
+        <div className="my_page_inner">
+          <header className="my_header">
+            <h1 id="my_page_title">마이페이지</h1>
+          </header>
 
-        <section className="my_profile" aria-label="내 정보">
-          <div className="my_profile_info">
-            <img className="my_profile_image" src={profileImage} alt="" />
-            <div className="my_profile_text">
-              <p>
-                <strong>안도훈</strong> 학부모님
-              </p>
-              <span>010-1234-5678</span>
+          <section className="my_profile" aria-label="내 정보">
+            <div className="my_profile_info">
+              <img className="my_profile_image" src={profileImage} alt="" />
+              <div className="my_profile_text">
+                <p>
+                  <strong>{signupProfile.studentName}</strong> 학부모님
+                </p>
+                <span>{signupProfile.parentPhone}</span>
+              </div>
             </div>
-          </div>
-          <button className="my_edit_button" type="button" aria-label="내 정보 수정">
-            <img src={writeIcon} alt="" />
-          </button>
-        </section>
-
-        <nav className="my_menu" aria-label="마이페이지 메뉴">
-          {myPageMenuItems.map((item) => (
-            <button
-              className={`my_menu_item ${item.disabled ? 'my_menu_item_disabled' : ''} ${
-                item.danger ? 'my_menu_item_danger' : ''
-              }`}
-              type="button"
-              disabled={item.disabled}
-              key={item.label}
-            >
-              {item.label}
+            <button className="my_edit_button" type="button" aria-label="내 정보 수정" onClick={onEditProfile}>
+              <img src={writeIcon} alt="" />
             </button>
-          ))}
-        </nav>
+          </section>
+
+          <nav className="my_menu" aria-label="마이페이지 메뉴">
+            {myPageMenuItems.map((item) => (
+              <button
+                className={`my_menu_item ${item.disabled ? 'my_menu_item_disabled' : ''} ${
+                  item.danger ? 'my_menu_item_danger' : ''
+                }`}
+                type="button"
+                disabled={item.disabled}
+                key={item.label}
+                onClick={() => {
+                  if (item.label === '신청 내역') {
+                    setIsApplicationHistoryOpen(true)
+                    return
+                  }
+
+                  if (item.label === '로그아웃') {
+                    setMyConfirmPopupType('logout')
+                    return
+                  }
+
+                  if (item.label === '회원 탈퇴') {
+                    setMyConfirmPopupType('withdraw')
+                  }
+                }}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </section>
+
+      <AnimatePresence>
+        {myConfirmPopupType && (
+          <MyConfirmPopup
+            type={myConfirmPopupType}
+            onCancel={() => setMyConfirmPopupType(null)}
+            onConfirm={onExitToLogin}
+          />
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
+
+type MyConfirmPopupProps = {
+  type: 'logout' | 'withdraw'
+  onCancel: () => void
+  onConfirm: () => void
+}
+
+function MyConfirmPopup({ type, onCancel, onConfirm }: MyConfirmPopupProps) {
+  const isLogout = type === 'logout'
+
+  return (
+    <motion.div
+      className="my_confirm_overlay"
+      role="presentation"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onCancel}
+    >
+      <motion.div
+        className="my_confirm_popup"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="my_confirm_title"
+        initial={{ opacity: 0, scale: 0.94, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.94, y: 12 }}
+        transition={{ duration: 0.18, ease: 'easeOut' }}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <h2 id="my_confirm_title">{isLogout ? '로그아웃하시겠어요?' : '회원 탈퇴하시겠어요?'}</h2>
+        <p>
+          {isLogout ? (
+            <>
+              로그아웃 후 다시 로그인해야
+              <br />
+              서비스를 이용할 수 있습니다.
+            </>
+          ) : (
+            <>
+              탈퇴 시 계정 정보와 이용 기록이 삭제되며
+              <br />
+              복구할 수 없습니다.
+            </>
+          )}
+        </p>
+        <div className="my_confirm_actions">
+          <button type="button" onClick={onCancel}>
+            취소
+          </button>
+          <button className={isLogout ? undefined : 'my_confirm_danger'} type="button" onClick={onConfirm}>
+            {isLogout ? '로그아웃' : '회원 탈퇴'}
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+type ApplicationHistoryTabId = 'lesson' | 'shuttle'
+
+type ApplicationHistoryScreenProps = {
+  lessonApplications: CompletedLessonApplication[]
+  shuttleApplications: CompletedShuttleApplication[]
+  onBack: () => void
+}
+
+function ApplicationHistoryScreen({
+  lessonApplications,
+  shuttleApplications,
+  onBack,
+}: ApplicationHistoryScreenProps) {
+  const [activeHistoryTabId, setActiveHistoryTabId] = useState<ApplicationHistoryTabId>('lesson')
+  const activeApplications = activeHistoryTabId === 'lesson' ? lessonApplications : shuttleApplications
+
+  return (
+    <section className="application_history_page" aria-labelledby="application_history_title">
+      <header className="application_history_header">
+        <button className="application_history_back" type="button" aria-label="마이페이지로 돌아가기" onClick={onBack}>
+          <img src={backIcon} alt="" />
+        </button>
+        <h1 id="application_history_title">신청 내역</h1>
+        <span aria-hidden="true" />
+      </header>
+
+      <nav className="application_history_tabs" aria-label="신청 내역 구분">
+        <button
+          className={
+            activeHistoryTabId === 'lesson'
+              ? 'application_history_tab application_history_tab_active'
+              : 'application_history_tab'
+          }
+          type="button"
+          onClick={() => setActiveHistoryTabId('lesson')}
+        >
+          보강 시간표
+        </button>
+        <button
+          className={
+            activeHistoryTabId === 'shuttle'
+              ? 'application_history_tab application_history_tab_active'
+              : 'application_history_tab'
+          }
+          type="button"
+          onClick={() => setActiveHistoryTabId('shuttle')}
+        >
+          셔틀 시간표
+        </button>
+      </nav>
+
+      <div className="application_history_content">
+        {activeApplications.length === 0 ? (
+          <p className="application_history_empty">신청 완료된 내역이 없습니다.</p>
+        ) : activeHistoryTabId === 'lesson' ? (
+          <ApplicationHistoryLessonList applications={lessonApplications} />
+        ) : (
+          <ApplicationHistoryShuttleList applications={shuttleApplications} />
+        )}
       </div>
     </section>
   )
 }
 
-function HomeScreen() {
+function ApplicationHistoryLessonList({ applications }: { applications: CompletedLessonApplication[] }) {
+  const applicationGroups = groupApplicationsByDate(applications)
+
+  return (
+    <>
+      {applicationGroups.map((group) => (
+        <section className="application_history_group" key={group.key}>
+          <h2>{formatApplicationHistoryDate(group.date)}</h2>
+          <ul className="application_history_list">
+            {group.items.map((application) => (
+              <li className="schedule_lesson_item application_history_item" key={application.id}>
+                <div className="schedule_lesson_top">
+                  <div className="schedule_lesson_info">
+                    <h3>{application.lesson.className}</h3>
+                    <p>
+                      {application.lesson.instructor} | {application.lesson.lane}
+                    </p>
+                  </div>
+                  <span className="schedule_lesson_apply schedule_lesson_apply_completed application_history_status">
+                    신청 완료
+                  </span>
+                </div>
+                <div className="schedule_lesson_bottom application_history_bottom">
+                  <div className="schedule_lesson_reservation">
+                    <img src={timeIcon} alt="" />
+                    <span>{application.time}</span>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </>
+  )
+}
+
+function ApplicationHistoryShuttleList({ applications }: { applications: CompletedShuttleApplication[] }) {
+  const applicationGroups = groupApplicationsByDate(applications)
+
+  return (
+    <>
+      {applicationGroups.map((group) => (
+        <section className="application_history_group" key={group.key}>
+          <h2>{formatApplicationHistoryDate(group.date)}</h2>
+          <ul className="application_history_list">
+            {group.items.map((application) => (
+              <li className="schedule_lesson_item application_history_item" key={application.id}>
+                <div className="schedule_lesson_top">
+                  <div className="schedule_lesson_info">
+                    <h3>{application.shuttle.kind}</h3>
+                    <p>
+                      {application.shuttle.name} | {application.shuttle.place}
+                    </p>
+                  </div>
+                  <span className="schedule_lesson_apply schedule_lesson_apply_completed application_history_status">
+                    신청 완료
+                  </span>
+                </div>
+                <div className="schedule_lesson_bottom application_history_bottom">
+                  <div className="schedule_lesson_reservation">
+                    <img src={timeIcon} alt="" />
+                    <span>{application.changeText}</span>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </>
+  )
+}
+
+function groupApplicationsByDate<T extends { date: Date; id: string }>(applications: T[]) {
+  return applications.reduce<Array<{ date: Date; items: T[]; key: string }>>((groups, application) => {
+    const key = `${application.date.getFullYear()}-${application.date.getMonth() + 1}-${application.date.getDate()}`
+    const existingGroup = groups.find((group) => group.key === key)
+
+    if (existingGroup) {
+      existingGroup.items.push(application)
+      return groups
+    }
+
+    return [...groups, { date: application.date, items: [application], key }]
+  }, [])
+}
+
+function formatApplicationHistoryDate(date: Date) {
+  return `| ${date.getMonth() + 1}월 ${date.getDate()}일`
+}
+
+type HomeScreenProps = {
+  signupProfile: SignupProfile
+}
+
+function HomeScreen({ signupProfile }: HomeScreenProps) {
   const [openTimetableId, setOpenTimetableId] = useState<TimetableId | null>('toddlers')
   const [isRenewalPopupOpen, setIsRenewalPopupOpen] = useState(false)
   const [phonePopupTitle, setPhonePopupTitle] = useState('등록 연장 문의')
@@ -469,7 +778,7 @@ function HomeScreen() {
   return (
     <div className="home_screen">
       {homeDetailView === 'alerts' ? (
-        <AlertScreen onBack={() => setHomeDetailView('home')} />
+        <AlertScreen studentName={signupProfile.studentName} onBack={() => setHomeDetailView('home')} />
       ) : homeDetailView === 'facilities' ? (
         <FacilitiesScreen initialTabId={initialInfoTabId} onBack={() => setHomeDetailView('home')} />
       ) : (
@@ -487,7 +796,7 @@ function HomeScreen() {
           <div className="home_profile_text">
             <div className="home_profile_copy">
               <h1>
-                <strong>안도훈</strong> 학부모님
+                <strong>{signupProfile.studentName}</strong> 학부모님
               </h1>
               <p>
                 재등록까지 <strong>D-59</strong> 남았습니다.
@@ -837,14 +1146,39 @@ function FacilitiesShareMenu({ title }: { title: string }) {
   )
 }
 
-function AlertScreen({ onBack }: { onBack: () => void }) {
+type AlertScreenProps = {
+  studentName: string
+  onBack: () => void
+}
+
+function AlertScreen({ studentName, onBack }: AlertScreenProps) {
   const [activeAlertTabId, setActiveAlertTabId] = useState<AlertTabId>('notice')
-  const [readAlertIds, setReadAlertIds] = useState<string[]>([
-    ...alertItems.map((item) => item.id),
-    ...rideAlertGroups.flatMap((group) =>
-      group.items.filter((item) => item.date !== '6월 1일').map((item) => item.id),
-    ),
-  ])
+  const [readAlertIds, setReadAlertIds] = useState<string[]>(() => {
+    const defaultReadAlertIds = [
+      ...alertItems.map((item) => item.id),
+      ...rideAlertGroups.flatMap((group) =>
+        group.items.filter((item) => item.date !== '6월 1일').map((item) => item.id),
+      ),
+    ]
+
+    try {
+      const storedReadAlertIds = window.localStorage.getItem('csc_read_alert_ids')
+
+      if (!storedReadAlertIds) {
+        return defaultReadAlertIds
+      }
+
+      const parsedReadAlertIds = JSON.parse(storedReadAlertIds)
+
+      if (!Array.isArray(parsedReadAlertIds)) {
+        return defaultReadAlertIds
+      }
+
+      return Array.from(new Set([...defaultReadAlertIds, ...parsedReadAlertIds.filter((id) => typeof id === 'string')]))
+    } catch {
+      return defaultReadAlertIds
+    }
+  })
   const noticeUnreadIds = alertItems.map((item) => item.id).filter((id) => !readAlertIds.includes(id))
   const rideUnreadIds = rideAlertGroups
     .flatMap((group) => group.items.map((item) => item.id))
@@ -856,7 +1190,12 @@ function AlertScreen({ onBack }: { onBack: () => void }) {
 
   const markActiveTabAsRead = () => {
     if (isReadAllDisabled) return
-    setReadAlertIds((current) => Array.from(new Set([...current, ...activeUnreadIds])))
+    setReadAlertIds((current) => {
+      const nextReadAlertIds = Array.from(new Set([...current, ...activeUnreadIds]))
+      window.localStorage.setItem('csc_read_alert_ids', JSON.stringify(nextReadAlertIds))
+
+      return nextReadAlertIds
+    })
   }
 
   return (
@@ -953,7 +1292,7 @@ function AlertScreen({ onBack }: { onBack: () => void }) {
                         <h3>{item.category}</h3>
                         <p>
                           {item.title.split('\n').map((line) => (
-                            <span key={line}>{line}</span>
+                            <span key={line}>{line.replaceAll('안도훈', studentName)}</span>
                           ))}
                         </p>
                         <span>{item.author}</span>
@@ -1002,6 +1341,68 @@ function FacilitiesIntroContent() {
 }
 
 function InstructorsIntroContent() {
+  const [selectedInstructorImage, setSelectedInstructorImage] = useState<string | null>(null)
+  const [imageScale, setImageScale] = useState(1)
+  const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 })
+  const [dragStartPoint, setDragStartPoint] = useState<{ x: number; y: number } | null>(null)
+  const touchDistanceRef = useRef<number | null>(null)
+  const imageOffsetRef = useRef({ x: 0, y: 0 })
+
+  const closeInstructorImageViewer = () => {
+    setSelectedInstructorImage(null)
+    setImageScale(1)
+    setImageOffset({ x: 0, y: 0 })
+    setDragStartPoint(null)
+    imageOffsetRef.current = { x: 0, y: 0 }
+    touchDistanceRef.current = null
+  }
+
+  const updateImageScale = (nextScale: number) => {
+    const clampedScale = Math.min(Math.max(nextScale, 1), 4)
+
+    setImageScale(clampedScale)
+
+    if (clampedScale === 1) {
+      setImageOffset({ x: 0, y: 0 })
+      imageOffsetRef.current = { x: 0, y: 0 }
+    }
+  }
+
+  const updateImageOffset = (nextOffset: { x: number; y: number }) => {
+    setImageOffset(nextOffset)
+    imageOffsetRef.current = nextOffset
+  }
+
+  const getTouchDistance = (touches: React.TouchList) => {
+    const firstTouch = touches[0]
+    const secondTouch = touches[1]
+
+    return Math.hypot(firstTouch.clientX - secondTouch.clientX, firstTouch.clientY - secondTouch.clientY)
+  }
+
+  useEffect(() => {
+    if (!dragStartPoint) {
+      return undefined
+    }
+
+    const moveImage = (event: MouseEvent) => {
+      updateImageOffset({
+        x: event.clientX - dragStartPoint.x,
+        y: event.clientY - dragStartPoint.y,
+      })
+    }
+
+    const stopDragging = () => setDragStartPoint(null)
+
+    window.addEventListener('mousemove', moveImage)
+    window.addEventListener('mouseup', stopDragging)
+
+    return () => {
+      window.removeEventListener('mousemove', moveImage)
+      window.removeEventListener('mouseup', stopDragging)
+    }
+  }, [dragStartPoint])
+
   return (
     <div className="facilities_content facilities_instructor_content">
       <article className="instructor_intro_card">
@@ -1016,10 +1417,107 @@ function InstructorsIntroContent() {
         </div>
         <div className="instructor_image_list">
           {instructorImages.map((image) => (
-            <img src={image} alt="" key={image} />
+            <button className="instructor_image_button" type="button" key={image} onClick={() => setSelectedInstructorImage(image)}>
+              <img src={image} alt="" />
+            </button>
           ))}
         </div>
       </article>
+
+      <AnimatePresence>
+        {selectedInstructorImage && (
+          <motion.div
+            className="instructor_lightbox"
+            role="dialog"
+            aria-modal="true"
+            aria-label="강사 이미지 확대 보기"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeInstructorImageViewer}
+          >
+            <button
+              className="instructor_lightbox_close"
+              type="button"
+              aria-label="닫기"
+              onClick={(event) => {
+                event.stopPropagation()
+                closeInstructorImageViewer()
+              }}
+            >
+              닫기
+            </button>
+            <div className="instructor_lightbox_zoom_controls" onClick={(event) => event.stopPropagation()}>
+              <button type="button" aria-label="이미지 축소" onClick={() => updateImageScale(imageScale - 0.25)}>
+                -
+              </button>
+              <button type="button" aria-label="이미지 확대" onClick={() => updateImageScale(imageScale + 0.25)}>
+                +
+              </button>
+            </div>
+            <motion.img
+              className="instructor_lightbox_image"
+              src={selectedInstructorImage}
+              alt=""
+              style={{ transform: `translate3d(${imageOffset.x}px, ${imageOffset.y}px, 0) scale(${imageScale})` }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18, ease: 'easeOut' }}
+              onClick={(event) => event.stopPropagation()}
+              onMouseDown={(event) => {
+                if (imageScale <= 1) {
+                  return
+                }
+
+                event.preventDefault()
+                setDragStartPoint({
+                  x: event.clientX - imageOffsetRef.current.x,
+                  y: event.clientY - imageOffsetRef.current.y,
+                })
+              }}
+              onTouchStart={(event) => {
+                if (event.touches.length === 2) {
+                  touchDistanceRef.current = getTouchDistance(event.touches)
+                  setDragStartPoint(null)
+                  return
+                }
+
+                if (event.touches.length === 1 && imageScale > 1) {
+                  setDragStartPoint({
+                    x: event.touches[0].clientX - imageOffsetRef.current.x,
+                    y: event.touches[0].clientY - imageOffsetRef.current.y,
+                  })
+                }
+              }}
+              onTouchMove={(event) => {
+                if (event.touches.length === 2 && touchDistanceRef.current !== null) {
+                  event.preventDefault()
+                  const nextTouchDistance = getTouchDistance(event.touches)
+                  const distanceRatio = nextTouchDistance / touchDistanceRef.current
+
+                  updateImageScale(imageScale * distanceRatio)
+                  touchDistanceRef.current = nextTouchDistance
+                  return
+                }
+
+                if (event.touches.length === 1 && dragStartPoint) {
+                  event.preventDefault()
+
+                  updateImageOffset({
+                    x: event.touches[0].clientX - dragStartPoint.x,
+                    y: event.touches[0].clientY - dragStartPoint.y,
+                  })
+                }
+              }}
+              onTouchEnd={() => {
+                touchDistanceRef.current = null
+                setDragStartPoint(null)
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

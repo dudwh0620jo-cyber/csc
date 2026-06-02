@@ -3,11 +3,23 @@ import type { ScheduleLesson } from '../types/schedule'
 
 type ScheduleLessonItemProps = {
   isDisabled?: boolean
+  isCompleted?: boolean
+  disabledLabel?: string
   lesson: ScheduleLesson
   onApply: () => void
 }
 
-function ScheduleLessonItem({ isDisabled = false, lesson, onApply }: ScheduleLessonItemProps) {
+function ScheduleLessonItem({
+  isDisabled = false,
+  isCompleted = false,
+  disabledLabel = '신청 마감',
+  lesson,
+  onApply,
+}: ScheduleLessonItemProps) {
+  const buttonClassName = isCompleted
+    ? 'schedule_lesson_apply schedule_lesson_apply_completed'
+    : 'schedule_lesson_apply'
+
   return (
     <li className="schedule_lesson_item">
       <div className="schedule_lesson_top">
@@ -17,8 +29,8 @@ function ScheduleLessonItem({ isDisabled = false, lesson, onApply }: ScheduleLes
             {lesson.instructor} | {lesson.lane}
           </p>
         </div>
-        <button className="schedule_lesson_apply" type="button" disabled={isDisabled} onClick={onApply}>
-          {isDisabled ? '신청 마감' : '신청하기'}
+        <button className={buttonClassName} type="button" disabled={isDisabled || isCompleted} onClick={onApply}>
+          {isCompleted ? '신청 완료' : isDisabled ? disabledLabel : '신청하기'}
         </button>
       </div>
       <div className="schedule_lesson_bottom">

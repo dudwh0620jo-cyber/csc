@@ -118,6 +118,67 @@
   background: var(--color-main-03);
 }
 
+.onboarding_swipe_hint {
+  position: absolute;
+  left: 50%;
+  bottom: 82px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.onboarding_swipe_motion {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 78px;
+  height: 28px;
+}
+
+.onboarding_swipe_icon {
+  display: block;
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(18%) sepia(83%) saturate(1760%) hue-rotate(219deg) brightness(93%) contrast(94%);
+  animation: onboardingSwipeHand 1.6s ease-in-out infinite;
+}
+
+.onboarding_swipe_text {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--color-main-03);
+  white-space: nowrap;
+}
+
+@keyframes onboardingSwipeHand {
+  0% {
+    opacity: 0;
+    transform: translateX(26px) rotate(8deg);
+  }
+
+  16% {
+    opacity: 1;
+  }
+
+  64% {
+    opacity: 1;
+    transform: translateX(-24px) rotate(-8deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(-24px) rotate(-8deg);
+  }
+}
+
 @media (max-width: 360px) {
   .onboarding_visual {
     width: min(360px, calc(100vw - 36px));

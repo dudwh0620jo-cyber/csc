@@ -12,9 +12,10 @@ import { formatScheduleDeadlineText } from '../utils/scheduleDate'
 type ShuttleScheduleChangeDetailProps = {
   selection: ShuttleScheduleSelection
   onBack: () => void
+  onComplete?: (changeText: string) => void
 }
 
-function ShuttleScheduleChangeDetail({ selection, onBack }: ShuttleScheduleChangeDetailProps) {
+function ShuttleScheduleChangeDetail({ selection, onBack, onComplete }: ShuttleScheduleChangeDetailProps) {
   const [selectedChangeType, setSelectedChangeType] = useState<'self' | 'etc' | null>('self')
   const [etcChangeText, setEtcChangeText] = useState('')
   const [isCompletePopupOpen, setIsCompletePopupOpen] = useState(false)
@@ -22,6 +23,7 @@ function ShuttleScheduleChangeDetail({ selection, onBack }: ShuttleScheduleChang
   const deadlineText = formatScheduleDeadlineText(date)
   const isSubmitDisabled = selectedChangeType === 'etc' && etcChangeText.trim().length === 0
   const closeCompletePopup = () => {
+    onComplete?.(selectedChangeType === 'etc' ? etcChangeText.trim() : '자가로 변경')
     setIsCompletePopupOpen(false)
     onBack()
   }

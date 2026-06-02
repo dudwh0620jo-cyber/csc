@@ -17,23 +17,42 @@ import {
 import '../style/signup.css'
 
 type SignupProps = {
+  initialProfile?: SignupProfile
+  initialStep?: SignupStep
+  initialVerifiedPhoneFields?: Array<keyof SignupProfile>
   onBack: () => void
-  onComplete: () => void
+  onComplete: (profile: SignupProfile, verifiedPhoneFields: Array<keyof SignupProfile>) => void
 }
 
 type SignupTermId = (typeof signupTermItems)[number]['id']
 
-function Signup({ onBack, onComplete }: SignupProps) {
-  const [currentStep, setCurrentStep] = useState<SignupStep>('terms')
+function Signup({
+  initialProfile = initialSignupProfile,
+  initialStep = 'terms',
+  initialVerifiedPhoneFields = [],
+  onBack,
+  onComplete,
+}: SignupProps) {
+  const [currentStep, setCurrentStep] = useState<SignupStep>(initialStep)
   const [checkedTermIds, setCheckedTermIds] = useState<SignupTermId[]>([])
   const [selectedUserType, setSelectedUserType] = useState<UserType>('parent')
-  const [signupProfile, setSignupProfile] = useState<SignupProfile>(initialSignupProfile)
-  const [studentBirthDateValue, setStudentBirthDateValue] = useState('')
-  const [verifiedPhoneFields, setVerifiedPhoneFields] = useState<Array<keyof SignupProfile>>([])
+  const [signupProfile, setSignupProfile] = useState<SignupProfile>(initialProfile)
+  const [studentBirthDateValue, setStudentBirthDateValue] = useState(() =>
+    getDatePickerValueFromProfile(initialProfile.studentBirthDate),
+  )
+  const [verifiedPhoneFields, setVerifiedPhoneFields] = useState<Array<keyof SignupProfile>>(initialVerifiedPhoneFields)
   const studentBirthDateInputRef = useRef<HTMLInputElement>(null)
 
   const isAllTermsChecked = checkedTermIds.length === signupTermItems.length
-  const isNextButtonDisabled = currentStep === 'terms' && !isAllTermsChecked
+  const isProfileRequiredComplete =
+    Boolean(signupProfile.studentName.trim()) &&
+    Boolean(signupProfile.studentBirthDate) &&
+    Boolean(signupProfile.studentGender) &&
+    Boolean(signupProfile.parentRelation) &&
+    signupProfile.parentPhone.replace(/\D/g, '').length === 11 &&
+    verifiedPhoneFields.includes('parentPhone')
+  const isNextButtonDisabled =
+    (currentStep === 'terms' && !isAllTermsChecked) || (currentStep === 'profile' && !isProfileRequiredComplete)
 
   const toggleTerm = (termId: SignupTermId) => {
     setCheckedTermIds((previousIds) =>
@@ -49,6 +68,11 @@ function Signup({ onBack, onComplete }: SignupProps) {
 
   const moveToPreviousStep = () => {
     if (currentStep === 'profile') {
+      if (initialStep === 'profile') {
+        onBack()
+        return
+      }
+
       setCurrentStep('user_type')
       return
     }
@@ -72,7 +96,7 @@ function Signup({ onBack, onComplete }: SignupProps) {
       return
     }
 
-    onComplete()
+    onComplete(signupProfile, verifiedPhoneFields)
   }
 
   const updateSignupProfile = (fieldName: keyof SignupProfile, value: string) => {
@@ -170,11 +194,19 @@ function Signup({ onBack, onComplete }: SignupProps) {
             <div className="signup_user_type_list">
               {signupUserTypeOptions.map((userTypeOption) => {
                 const isSelected = selectedUserType === userTypeOption.id
+                const userTypeClassName = [
+                  'signup_user_type',
+                  isSelected ? 'signup_user_type_active' : '',
+                  userTypeOption.disabled ? 'signup_user_type_disabled' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')
 
                 return (
                   <button
-                    className={isSelected ? 'signup_user_type signup_user_type_active' : 'signup_user_type'}
+                    className={userTypeClassName}
                     type="button"
+                    disabled={userTypeOption.disabled}
                     key={userTypeOption.id}
                     onClick={() => setSelectedUserType(userTypeOption.id)}
                   >
@@ -200,7 +232,7 @@ function Signup({ onBack, onComplete }: SignupProps) {
                 </h2>
                 <div className="signup_field_list">
                   <label className={getSignupInfoFieldClass(Boolean(signupProfile.studentName))}>
-                    <span className="signup_info_label">이름</span>
+                    <RequiredLabel>이름</RequiredLabel>
                     <input
                       className="signup_info_input"
                       value={signupProfile.studentName}
@@ -210,7 +242,7 @@ function Signup({ onBack, onComplete }: SignupProps) {
                   </label>
 
                   <div className={getSignupInfoFieldClass(Boolean(signupProfile.studentBirthDate))}>
-                    <span className="signup_info_label">생년월일</span>
+                    <RequiredLabel>생년월일</RequiredLabel>
                     <div className="signup_date_row">
                       <button
                         className={
@@ -242,7 +274,7 @@ function Signup({ onBack, onComplete }: SignupProps) {
                   </div>
 
                   <div className={getSignupInfoFieldClass(Boolean(signupProfile.studentGender))}>
-                    <span className="signup_info_label">성별</span>
+                    <RequiredLabel>성별</RequiredLabel>
                     <div className="signup_segment_group">
                       <SegmentButton
                         isSelected={signupProfile.studentGender === 'male'}
@@ -277,8 +309,14 @@ function Signup({ onBack, onComplete }: SignupProps) {
                         </button>
                       </div>
                     </label>
-                    {verifiedPhoneFields.includes('studentPhone') && (
+                    {verifiedPhoneFields.includes('studentPhone') ? (
                       <p className="signup_verified_message">전화번호가 인증되었습니다</p>
+                    ) : (
+                      signupProfile.studentPhone.replace(/\D/g, '').length === 11 && (
+                        <p className="signup_verified_message signup_verified_message_notice">
+                          안전한 서비스 이용을 위해 전화번호 인증이 필요합니다
+                        </p>
+                      )
                     )}
                   </div>
                 </div>
@@ -290,7 +328,7 @@ function Signup({ onBack, onComplete }: SignupProps) {
                 </h2>
                 <div className="signup_field_list">
                   <div className={getSignupInfoFieldClass(Boolean(signupProfile.parentRelation))}>
-                    <span className="signup_info_label">관계</span>
+                    <RequiredLabel>관계</RequiredLabel>
                     <div className="signup_segment_group">
                       <SegmentButton
                         isSelected={signupProfile.parentRelation === 'mother'}
@@ -307,7 +345,7 @@ function Signup({ onBack, onComplete }: SignupProps) {
 
                   <div className="signup_verified_group">
                     <label className={getSignupInfoFieldClass(Boolean(signupProfile.parentPhone))}>
-                      <span className="signup_info_label">전화번호</span>
+                      <RequiredLabel>전화번호</RequiredLabel>
                       <div className="signup_phone_row">
                         <input
                           className="signup_info_input"
@@ -325,8 +363,14 @@ function Signup({ onBack, onComplete }: SignupProps) {
                         </button>
                       </div>
                     </label>
-                    {verifiedPhoneFields.includes('parentPhone') && (
+                    {verifiedPhoneFields.includes('parentPhone') ? (
                       <p className="signup_verified_message">전화번호가 인증되었습니다</p>
+                    ) : (
+                      signupProfile.parentPhone.replace(/\D/g, '').length === 11 && (
+                        <p className="signup_verified_message signup_verified_message_notice">
+                          안전한 서비스 이용을 위해 전화번호 인증이 필요합니다
+                        </p>
+                      )
                     )}
                   </div>
                 </div>
@@ -361,6 +405,33 @@ function SignupTitle({ title, description }: SignupTitleProps) {
 
 function getSignupInfoFieldClass(hasValue: boolean) {
   return hasValue ? 'signup_info_field signup_info_field_filled' : 'signup_info_field'
+}
+
+function getDatePickerValueFromProfile(dateText: string) {
+  const [year, month, day] = dateText
+    .split('/')
+    .map((datePart) => datePart.trim())
+
+  if (!year || !month || !day) {
+    return ''
+  }
+
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+}
+
+type RequiredLabelProps = {
+  children: string
+}
+
+function RequiredLabel({ children }: RequiredLabelProps) {
+  return (
+    <span className="signup_info_label">
+      {children}
+      <span className="signup_required_mark" aria-label="필수">
+        *
+      </span>
+    </span>
+  )
 }
 
 function formatPhoneNumber(value: string) {

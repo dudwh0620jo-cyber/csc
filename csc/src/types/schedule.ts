@@ -1,5 +1,5 @@
 export type ScheduleViewMode = 'month' | 'week'
-export type ScheduleDotType = 'past' | 'toddlers' | 'elementary' | 'adults'
+export type ScheduleDotType = 'past' | 'toddlers' | 'elementary' | 'adults' | 'masters'
 export type AvailableScheduleDotType = Exclude<ScheduleDotType, 'past'>
 
 export type ScheduleDay = {
@@ -30,6 +30,10 @@ export type ScheduleReservationSelection = {
   time: string
 }
 
+export type CompletedLessonApplication = ScheduleReservationSelection & {
+  id: string
+}
+
 export type ShuttleSchedule = {
   kind: '승차' | '하차'
   name: string
@@ -40,6 +44,11 @@ export type ShuttleSchedule = {
 export type ShuttleScheduleSelection = {
   date: Date
   shuttle: ShuttleSchedule
+}
+
+export type CompletedShuttleApplication = ShuttleScheduleSelection & {
+  changeText: string
+  id: string
 }
 
 export type ScheduleClassFilter = '전체' | '유아반' | '초등반' | '성인반' | '엘리트' | '마스터즈'

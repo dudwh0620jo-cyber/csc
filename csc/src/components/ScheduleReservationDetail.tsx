@@ -13,15 +13,17 @@ import { formatScheduleDate, formatScheduleDeadlineText } from '../utils/schedul
 type ScheduleReservationDetailProps = {
   selection: ScheduleReservationSelection
   onBack: () => void
+  onComplete?: () => void
   onOpenInstructorInfo?: () => void
 }
 
-function ScheduleReservationDetail({ selection, onBack, onOpenInstructorInfo }: ScheduleReservationDetailProps) {
+function ScheduleReservationDetail({ selection, onBack, onComplete, onOpenInstructorInfo }: ScheduleReservationDetailProps) {
   const [isCompletePopupOpen, setIsCompletePopupOpen] = useState(false)
   const { date, lesson, time } = selection
   const waitingCount = lesson.canWait ? 1 : 0
   const deadlineText = formatScheduleDeadlineText(date)
   const closeCompletePopup = () => {
+    onComplete?.()
     setIsCompletePopupOpen(false)
     onBack()
   }
