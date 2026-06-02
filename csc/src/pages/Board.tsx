@@ -147,7 +147,7 @@ const boardPosts: BoardPost[] = [
 
 아이들 수영에 대한 부족한 부분이나 궁금한 점 남겨주시면
 그 내용들도 모아서 쉽게 이해할 수 있게 영상으로 제작해보겠습니다😊
-많은 관심 부탁드립니다!🩵✨🫧🏊🏻‍♀️💕
+많은 관심 부탁드립니다!
 
 유튜브 계정
 https://www.youtube.com/channel/UC9rsCmgWrHwSfjK0GWHXD_g
