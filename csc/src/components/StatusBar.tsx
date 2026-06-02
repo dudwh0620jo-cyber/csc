@@ -2,7 +2,24 @@ import batteryIcon from '../assets/svg/Battery.svg'
 import cellularConnectionIcon from '../assets/svg/Cellular Connection.svg'
 import wifiIcon from '../assets/svg/Wifi.svg'
 
+const isAndroidOrIosDevice = () => {
+  if (typeof navigator === 'undefined') {
+    return false
+  }
+
+  const userAgent = navigator.userAgent.toLowerCase()
+  const platform = navigator.platform.toLowerCase()
+  const isAndroid = userAgent.includes('android')
+  const isIos = /iphone|ipad|ipod/.test(userAgent) || (/mac/.test(platform) && navigator.maxTouchPoints > 1)
+
+  return isAndroid || isIos
+}
+
 function StatusBar() {
+  if (isAndroidOrIosDevice()) {
+    return null
+  }
+
   return (
     <header className="status_bar" aria-label="기기 상태">
       <div className="status_bar_nav">
