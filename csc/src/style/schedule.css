@@ -1,8 +1,33 @@
 .schedule_page {
+  position: relative;
   width: 100%;
   min-height: 100vh;
   padding: 90px 18px 100px;
   background: var(--color-bg-01);
+}
+
+.schedule_toast {
+  position: fixed;
+  left: 50%;
+  bottom: 50%;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: min(327px, calc(100vw - 36px));
+  padding: 13px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0;
+  color: var(--color-gray-01);
+  text-align: center;
+  word-break: keep-all;
+  background: rgba(15, 16, 18, 0.86);
+  box-shadow: 0 10px 26px rgba(9, 9, 9, 0.18);
+  pointer-events: none;
 }
 
 .schedule_header {
@@ -26,10 +51,10 @@
 .schedule_header h1 span,
 .schedule_header_tab {
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
   letter-spacing: -0.22px;
-  color: var(--color-gray-04);
+  color: var(--color-gray-09);
 }
 
 .schedule_header h1 span {
@@ -366,15 +391,14 @@
 
 .schedule_lesson_apply:disabled {
   color: var(--color-gray-09);
-  background: var(--color-gray-03);
+  background: #f4f7ff;
   cursor: not-allowed;
 }
 
 .schedule_lesson_apply_completed,
 .schedule_lesson_apply_completed:disabled {
-  color: var(--color-gray-01);
-  background: rgba(38, 75, 158, 0.5);
-  background: color-mix(in srgb, var(--color-main-03) 50%, transparent);
+  color: var(--color-gray-09);
+  background: #f4f7ff;
 }
 
 .schedule_lesson_bottom {
@@ -524,7 +548,8 @@
   width: 14px;
   height: 14px;
   object-fit: contain;
-  filter: brightness(0) saturate(100%) invert(31%) sepia(0%) saturate(41%) hue-rotate(205deg) brightness(91%) contrast(83%);
+  filter: brightness(0) saturate(100%) invert(31%) sepia(0%) saturate(41%)
+    hue-rotate(205deg) brightness(91%) contrast(83%);
 }
 
 .shuttle_schedule_bottom span {
@@ -546,7 +571,8 @@
   width: 14px;
   height: 14px;
   object-fit: contain;
-  filter: brightness(0) saturate(100%) invert(31%) sepia(0%) saturate(41%) hue-rotate(205deg) brightness(91%) contrast(83%);
+  filter: brightness(0) saturate(100%) invert(31%) sepia(0%) saturate(41%)
+    hue-rotate(205deg) brightness(91%) contrast(83%);
 }
 
 .shuttle_change_time span {

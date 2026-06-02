@@ -1,0 +1,325 @@
+.my_page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 90px 18px 133px;
+  background: var(--color-bg-01);
+}
+
+.my_page_inner {
+  display: flex;
+  flex-direction: column;
+  gap: 39px;
+  width: 100%;
+}
+
+.my_header {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  height: 47px;
+  padding-bottom: 30px;
+}
+
+.my_header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--color-text-01);
+}
+
+.my_profile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: -39px;
+}
+
+.my_profile_info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 0;
+}
+
+.my_profile_image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #ffdbb8;
+}
+
+.my_profile_text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.my_profile_text p {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--color-text-01);
+  white-space: nowrap;
+}
+
+.my_profile_text strong {
+  font-weight: 700;
+}
+
+.my_profile_text span {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--color-gray-07);
+  white-space: nowrap;
+}
+
+.my_edit_button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--color-main-03);
+  cursor: pointer;
+}
+
+.my_edit_button img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.my_menu {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.my_menu_item {
+  width: 100%;
+  padding: 16px 0;
+  border-bottom: 0.5px solid var(--color-gray-03);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--color-text-01);
+  text-align: left;
+  cursor: pointer;
+}
+
+.my_menu_item_disabled {
+  color: var(--color-gray-08);
+  cursor: default;
+  opacity: 0.55;
+}
+
+.my_menu_item_danger {
+  color: #fe3333;
+}
+
+.my_menu_item:last-child {
+  border-bottom: 0;
+}
+
+.application_history_page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 50px 0 133px;
+  background: var(--color-bg-01);
+}
+
+.application_history_header {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 34px;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  padding: 4px 10px 12px;
+}
+
+.application_history_back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+}
+
+.application_history_back img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(20%) sepia(55%) saturate(1399%)
+    hue-rotate(209deg) brightness(92%) contrast(93%);
+}
+
+.application_history_header h1 {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 27px;
+  color: #101828;
+  text-align: center;
+}
+
+.application_history_tabs {
+  display: flex;
+  align-items: flex-start;
+  gap: 19px;
+  width: 100%;
+  padding: 20px 16px 0;
+  border-bottom: 1px solid var(--color-gray-03);
+}
+
+.application_history_tab {
+  position: relative;
+  padding: 2px 0 14px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--color-gray-09);
+  cursor: pointer;
+}
+
+.application_history_tab_active {
+  font-weight: 700;
+  color: var(--color-text-01);
+}
+
+.application_history_tab_active::after {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--color-main-03);
+  content: "";
+}
+
+.application_history_content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 22px 18px 0;
+}
+
+.application_history_group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.application_history_group h2 {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: -0.18px;
+  color: var(--color-text-01);
+}
+
+.application_history_item {
+  list-style: none;
+}
+
+.application_history_list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.application_history_status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+
+.application_history_bottom {
+  min-height: auto;
+  justify-content: flex-start;
+  padding: 9px 0;
+}
+
+.application_history_empty {
+  padding-top: 120px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-gray-09);
+  text-align: center;
+}
+
+.my_confirm_overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(15, 16, 18, 0.45);
+}
+
+.my_confirm_popup {
+  width: min(320px, 100%);
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--color-gray-01);
+  box-shadow: 0 14px 40px rgba(9, 9, 9, 0.18);
+}
+
+.my_confirm_popup h2 {
+  padding: 26px 22px 8px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0;
+  color: var(--color-text-01);
+  text-align: center;
+}
+
+.my_confirm_popup p {
+  padding: 0 24px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0;
+  color: var(--color-gray-09);
+  text-align: center;
+  word-break: keep-all;
+}
+
+.my_confirm_actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--color-gray-03);
+}
+
+.my_confirm_actions button {
+  height: 52px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--color-gray-09);
+  cursor: pointer;
+}
+
+.my_confirm_actions button + button {
+  border-left: 1px solid var(--color-gray-03);
+  color: var(--color-main-03);
+}
+
+.my_confirm_actions .my_confirm_danger {
+  color: #fe3333;
+}

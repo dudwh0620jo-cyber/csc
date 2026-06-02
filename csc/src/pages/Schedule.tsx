@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import ScheduleCalendar from '../components/ScheduleCalendar'
 import ScheduleFilterSheet from '../components/ScheduleFilterSheet'
 import ScheduleLessonItem from '../components/ScheduleLessonItem'
@@ -39,6 +39,7 @@ const scheduleInstructorFilters: ScheduleInstructorFilter[] = [
   '이남호 강사',
   '오수빈 강사',
 ]
+const sameDayScheduleToastMessage = '원활한 운영을 위해 당일 신청은 지원되지 않습니다.\n다른 날짜를 선택해 주세요.'
 
 const getScheduleToday = () => {
   const today = new Date()
@@ -298,7 +299,7 @@ const shuttleScheduleItems: ShuttleSchedule[] = [
 type ScheduleScreenProps = {
   onCompleteLessonApplication: (application: CompletedLessonApplication) => void
   onCompleteShuttleApplication: (application: CompletedShuttleApplication) => void
-  onOpenInstructorInfo?: () => void
+  onOpenInstructorInfo?: (instructorName: string) => void
   resetKey?: number
   signupProfile: SignupProfile
 }
@@ -320,6 +321,7 @@ function ScheduleScreen({
   const [completedApplicationKeys, setCompletedApplicationKeys] = useState<string[]>([])
   const [selectedClassFilters, setSelectedClassFilters] = useState<ScheduleClassFilter[]>(['전체'])
   const [selectedInstructorFilters, setSelectedInstructorFilters] = useState<ScheduleInstructorFilter[]>(['전체'])
+  const [scheduleToastMessage, setScheduleToastMessage] = useState('')
 
   useEffect(() => {
     const today = getScheduleToday()
@@ -327,6 +329,16 @@ function ScheduleScreen({
     setSchedulePageMode('lesson')
     setVisibleDate(today)
     setSelectedDate(today)
+  }, [resetKey])
+
+  useEffect(() => {
+    setScheduleToastMessage(sameDayScheduleToastMessage)
+
+    const toastTimer = window.setTimeout(() => {
+      setScheduleToastMessage('')
+    }, 2000)
+
+    return () => window.clearTimeout(toastTimer)
   }, [resetKey])
 
   const calendarDays =
@@ -559,6 +571,22 @@ function ScheduleScreen({
           }
         />
       )}
+      <AnimatePresence>
+        {scheduleToastMessage && (
+          <motion.div
+            className="schedule_toast"
+            role="status"
+            initial={{ opacity: 0, x: '-50%', y: 'calc(50% + 12px)' }}
+            animate={{ opacity: 1, x: '-50%', y: '50%' }}
+            exit={{ opacity: 0, x: '-50%', y: 'calc(50% + 12px)' }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+          >
+            {scheduleToastMessage.split('\n').map((messageLine) => (
+              <span key={messageLine}>{messageLine}</span>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

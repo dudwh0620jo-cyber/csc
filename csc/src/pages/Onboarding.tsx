@@ -146,14 +146,12 @@ function Onboarding({ onComplete, onDebugHome }: OnboardingProps) {
             />
           ))}
         </div>
-        {currentSlideIndex === 0 && (
-          <div className="onboarding_swipe_hint" aria-hidden="true">
-            <span className="onboarding_swipe_motion">
-              <img className="onboarding_swipe_icon" src={handUpIcon} alt="" />
-            </span>
-            <span className="onboarding_swipe_text">스와이프로 이동하기</span>
-          </div>
-        )}
+        <div className="onboarding_swipe_hint" aria-hidden="true">
+          <span className="onboarding_swipe_motion">
+            <img className="onboarding_swipe_icon" src={handUpIcon} alt="" />
+          </span>
+          <span className="onboarding_swipe_text">스와이프로 이동하기</span>
+        </div>
       </section>
     </main>
   )

@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import backIcon from '../assets/svg/back.svg'
 import eyeIcon from '../assets/svg/Eye.svg'
 import bookmarkArrowIcon from '../assets/svg/famicons_arrow-down-outline.svg'
-import smileIcon from '../assets/svg/gg_smile.svg'
 import menuIcon from '../assets/svg/menu.svg'
 import gasi01Image from '../assets/notice/gasi01.png'
 import gasi02Image from '../assets/notice/gasi02.png'
@@ -503,8 +502,6 @@ type BoardPostCardProps = {
 }
 
 function BoardPostCard({ post, selectedReactionId, onOpen, onSelectReaction }: BoardPostCardProps) {
-  const [isReactionOpen, setIsReactionOpen] = useState(false)
-  const selectedReaction = reactionOptions.find((reaction) => reaction.id === selectedReactionId)
   const reactionSummary = reactionOptions
     .map((reaction) => ({
       ...reaction,
@@ -545,28 +542,8 @@ function BoardPostCard({ post, selectedReactionId, onOpen, onSelectReaction }: B
 
       <ReactionSummary reactions={reactionSummary} selectedReactionId={selectedReactionId} />
 
-      <ReactionBubble
-        isOpen={isReactionOpen}
-        selectedReactionId={selectedReactionId}
-        onSelect={(reactionId) => {
-          onSelectReaction(reactionId)
-          setIsReactionOpen(false)
-        }}
-      />
-
       <footer className="board_post_meta">
-        <button
-          className={selectedReaction ? 'board_post_reaction board_post_reaction_selected' : 'board_post_reaction'}
-          type="button"
-          aria-expanded={isReactionOpen}
-          onClick={(event) => {
-            event.stopPropagation()
-            setIsReactionOpen((current) => !current)
-          }}
-        >
-          <img src={smileIcon} alt="" />
-          <span>{selectedReaction ? selectedReaction.label : '표정짓기'}</span>
-        </button>
+        <ReactionQuickButtons selectedReactionId={selectedReactionId} onSelectReaction={onSelectReaction} />
         <span className="board_post_views">
           <img src={eyeIcon} alt="" />
           <span>{post.views}</span>
@@ -601,46 +578,31 @@ function ReactionSummary({ reactions, selectedReactionId }: ReactionSummaryProps
   )
 }
 
-type ReactionBubbleProps = {
-  isOpen: boolean
+type ReactionQuickButtonsProps = {
   selectedReactionId: string | null
-  onSelect: (reactionId: string) => void
+  onSelectReaction: (reactionId: string) => void
 }
 
-function ReactionBubble({ isOpen, selectedReactionId, onSelect }: ReactionBubbleProps) {
+function ReactionQuickButtons({ selectedReactionId, onSelectReaction }: ReactionQuickButtonsProps) {
   return (
-    <AnimatePresence initial={false}>
-      {isOpen && (
-        <motion.div
-          className="board_reaction_bubble"
-          role="menu"
-          aria-label="표정 선택"
-          initial={{ height: 0, opacity: 0, scale: 0.96, y: 6 }}
-          animate={{ height: 'auto', opacity: 1, scale: 1, y: 0 }}
-          exit={{ height: 0, opacity: 0, scale: 0.96, y: 6 }}
-          transition={{ duration: 0.22, ease: 'easeOut' }}
-          onClick={(event) => event.stopPropagation()}
+    <div className="board_post_reaction" aria-label="표정 선택" onClick={(event) => event.stopPropagation()}>
+      {reactionOptions.map((reaction) => (
+        <button
+          className={
+            reaction.id === selectedReactionId
+              ? 'board_reaction_emoji board_reaction_emoji_active'
+              : 'board_reaction_emoji'
+          }
+          type="button"
+          aria-label={reaction.label}
+          aria-pressed={reaction.id === selectedReactionId}
+          key={reaction.id}
+          onClick={() => onSelectReaction(reaction.id)}
         >
-          {reactionOptions.map((reaction) => (
-            <button
-              className={
-                reaction.id === selectedReactionId
-                  ? 'board_reaction_option board_reaction_option_active'
-                  : 'board_reaction_option'
-              }
-              type="button"
-              role="menuitemradio"
-              aria-checked={reaction.id === selectedReactionId}
-              key={reaction.id}
-              onClick={() => onSelect(reaction.id)}
-            >
-              <span aria-hidden="true">{reaction.emoji}</span>
-              {reaction.label}
-            </button>
-          ))}
-        </motion.div>
-      )}
-    </AnimatePresence>
+          {reaction.emoji}
+        </button>
+      ))}
+    </div>
   )
 }
 
@@ -731,9 +693,7 @@ type BoardPostDetailProps = {
 }
 
 function BoardPostDetail({ categoryLabel, post, selectedReactionId, onBack, onSelectReaction }: BoardPostDetailProps) {
-  const [isReactionOpen, setIsReactionOpen] = useState(false)
   const [copyFeedback, setCopyFeedback] = useState('')
-  const selectedReaction = reactionOptions.find((reaction) => reaction.id === selectedReactionId)
   const contentLinks = getContentLinks(post.content)
   const copyTargets = getCopyTargets(post.content)
   const reactionSummary = reactionOptions
@@ -802,25 +762,8 @@ function BoardPostDetail({ categoryLabel, post, selectedReactionId, onBack, onSe
 
         <ReactionSummary reactions={reactionSummary} selectedReactionId={selectedReactionId} />
 
-        <ReactionBubble
-          isOpen={isReactionOpen}
-          selectedReactionId={selectedReactionId}
-          onSelect={(reactionId) => {
-            onSelectReaction(reactionId)
-            setIsReactionOpen(false)
-          }}
-        />
-
         <footer className="board_post_meta">
-          <button
-            className={selectedReaction ? 'board_post_reaction board_post_reaction_selected' : 'board_post_reaction'}
-            type="button"
-            aria-expanded={isReactionOpen}
-            onClick={() => setIsReactionOpen((current) => !current)}
-          >
-            <img src={smileIcon} alt="" />
-            <span>{selectedReaction ? selectedReaction.label : '표정짓기'}</span>
-          </button>
+          <ReactionQuickButtons selectedReactionId={selectedReactionId} onSelectReaction={onSelectReaction} />
           <span className="board_post_views">
             <img src={eyeIcon} alt="" />
             <span>{post.views}</span>

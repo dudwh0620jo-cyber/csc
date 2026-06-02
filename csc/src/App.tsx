@@ -12,7 +12,10 @@ type AppView = 'splash' | 'onboarding' | 'login' | 'signup' | 'profile_edit' | '
 function App() {
   const [currentView, setCurrentView] = useState<AppView>('splash')
   const [signupProfile, setSignupProfile] = useState<SignupProfile>(initialSignupProfile)
-  const [verifiedPhoneFields, setVerifiedPhoneFields] = useState<Array<keyof SignupProfile>>([])
+  const [verifiedPhoneFields, setVerifiedPhoneFields] = useState<Array<keyof SignupProfile>>([
+    'studentPhone',
+    'parentPhone',
+  ])
   const [mainInitialNavigationId, setMainInitialNavigationId] = useState<'home' | 'my'>('home')
   const [completedLessonApplications, setCompletedLessonApplications] = useState<CompletedLessonApplication[]>([])
   const [completedShuttleApplications, setCompletedShuttleApplications] = useState<CompletedShuttleApplication[]>([])
@@ -53,6 +56,7 @@ function App() {
   if (currentView === 'signup') {
     return (
       <Signup
+        initialVerifiedPhoneFields={verifiedPhoneFields}
         onBack={() => setCurrentView('login')}
         onComplete={(profile, nextVerifiedPhoneFields) => {
           setSignupProfile(profile)

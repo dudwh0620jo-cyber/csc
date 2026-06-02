@@ -14,7 +14,7 @@ type ScheduleReservationDetailProps = {
   selection: ScheduleReservationSelection
   onBack: () => void
   onComplete?: () => void
-  onOpenInstructorInfo?: () => void
+  onOpenInstructorInfo?: (instructorName: string) => void
 }
 
 function ScheduleReservationDetail({ selection, onBack, onComplete, onOpenInstructorInfo }: ScheduleReservationDetailProps) {
@@ -95,7 +95,7 @@ function ScheduleReservationDetail({ selection, onBack, onComplete, onOpenInstru
         </section>
 
         <div className="schedule_reservation_links">
-          <button type="button" onClick={onOpenInstructorInfo}>
+          <button type="button" onClick={() => onOpenInstructorInfo?.(lesson.instructor)}>
             강사 정보 보러 가기
           </button>
           <button type="button" disabled>
