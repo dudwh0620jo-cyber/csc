@@ -1,7 +1,7 @@
 .onboarding_page {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow: hidden;
   color: var(--color-text-01);
   background: var(--color-bg-01);
@@ -10,7 +10,7 @@
 .onboarding_wrap {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow: hidden;
   background: var(--color-gray-01);
   touch-action: pan-y;
@@ -19,7 +19,7 @@
 .onboarding_track {
   display: flex;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   transition: transform 360ms ease;
   will-change: transform;
 }
@@ -27,7 +27,7 @@
 .onboarding_slide {
   flex: 0 0 100%;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .onboarding_inner {
@@ -35,7 +35,7 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 65px 18px 0;
 }
 

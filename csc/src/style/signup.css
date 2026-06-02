@@ -1,7 +1,7 @@
 .signup_page {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   color: var(--color-text-01);
   background: var(--color-bg-01);
 }
@@ -9,7 +9,7 @@
 .signup_wrap {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding-bottom: 96px;
   overflow: hidden;
   background: var(--color-gray-01);
@@ -202,7 +202,7 @@
 }
 
 .signup_profile_container {
-  height: calc(100vh - 83px - 94px);
+  height: calc(100dvh - 83px - 94px);
   overflow-y: auto;
   padding-bottom: 50px;
 }

@@ -1,13 +1,13 @@
 .main_page {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   color: var(--color-text-01);
   background: var(--color-bg-01);
 }
 
 .main_content {
-  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--color-bg-01);
 }
 
@@ -300,7 +300,7 @@
   flex-direction: column;
   gap: 6px;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 49px 0 0;
   background: var(--color-bg-01);
 }
@@ -412,7 +412,7 @@
 
 .alert_page {
   width: 100%;
-  min-height: calc(100vh - 83px);
+  min-height: calc(100dvh - 83px);
   padding: 49px 16px 70px;
   background: var(--color-bg-01);
 }
@@ -1634,7 +1634,7 @@
 }
 
 .main_placeholder {
-  min-height: calc(100vh - 83px);
+  min-height: calc(100dvh - 83px);
   padding: 92px 18px 24px;
   background: var(--color-gray-01);
 }

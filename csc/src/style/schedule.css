@@ -1,7 +1,7 @@
 .schedule_page {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 90px 18px 100px;
   background: var(--color-bg-01);
 }
@@ -682,7 +682,7 @@
   z-index: 9;
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 83px);
+  max-height: calc(100dvh - 83px);
   overflow: hidden;
   background: var(--color-gray-01);
 }
@@ -817,7 +817,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-height: 100vh;
+  min-height: 100dvh;
   color: var(--color-text-01);
   background: var(--color-bg-01);
 }

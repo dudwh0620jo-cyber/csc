@@ -1,7 +1,7 @@
 .login_page {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow: hidden;
   color: var(--color-text-01);
   background: var(--color-bg-01);
@@ -9,7 +9,7 @@
 
 .login_wrap {
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow: hidden;
   background: var(--color-gray-01);
 }
@@ -18,7 +18,7 @@
   display: flex;
   justify-content: center;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 120px 18px 0;
 }
 
