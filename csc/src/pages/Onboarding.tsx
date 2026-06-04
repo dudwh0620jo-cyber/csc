@@ -45,6 +45,11 @@ function Onboarding({ onComplete, onDebugHome }: OnboardingProps) {
     currentVideo.muted = true
     currentVideo.defaultMuted = true
     currentVideo.playsInline = true
+    currentVideo.controls = false
+    currentVideo.setAttribute('muted', '')
+    currentVideo.setAttribute('playsinline', '')
+    currentVideo.setAttribute('webkit-playsinline', '')
+    currentVideo.removeAttribute('controls')
 
     void currentVideo.play().catch(() => {
       // Mobile browsers can still block autoplay in power-saving modes.
@@ -129,6 +134,19 @@ function Onboarding({ onComplete, onDebugHome }: OnboardingProps) {
                     className="onboarding_video"
                     ref={(element) => {
                       videoRefs.current[slideIndex] = element
+
+                      if (!element) {
+                        return
+                      }
+
+                      element.muted = true
+                      element.defaultMuted = true
+                      element.playsInline = true
+                      element.controls = false
+                      element.setAttribute('muted', '')
+                      element.setAttribute('playsinline', '')
+                      element.setAttribute('webkit-playsinline', '')
+                      element.removeAttribute('controls')
                     }}
                     autoPlay
                     muted

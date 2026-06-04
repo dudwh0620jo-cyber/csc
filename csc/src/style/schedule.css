@@ -860,6 +860,8 @@
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.17px;
+  color: var(--color-text-01);
+  -webkit-text-fill-color: var(--color-text-01);
 }
 
 .schedule_reservation_summary {

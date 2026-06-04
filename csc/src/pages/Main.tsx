@@ -5,6 +5,7 @@ import StatusBar from '../components/StatusBar'
 import BoardScreen from './Board'
 import MyPageScreen from './MyPage'
 import ScheduleScreen from './Schedule'
+import useSwipeGesture from '../hooks/useSwipeGesture'
 import alertIcon from '../assets/svg/alart.svg'
 import alertArrowIcon from '../assets/svg/arrrrrow.svg'
 import arrowFullIcon from '../assets/svg/arrow_full.svg'
@@ -233,6 +234,8 @@ const instructorImageByName: Record<string, string> = {
   '강영훈 강사': instructor06Image,
 }
 
+const bottomNavigationOrder: BottomNavigationId[] = ['home', 'schedule', 'board', 'my']
+
 const swimmingNeedSections = [
   {
     number: '01',
@@ -395,8 +398,29 @@ function Main({
     setActiveNavigationId(navigationId)
   }
 
+  const moveNavigationBySwipe = (direction: -1 | 1) => {
+    const activeIndex = bottomNavigationOrder.indexOf(activeNavigationId)
+    const nextNavigationId = bottomNavigationOrder[activeIndex + direction]
+
+    if (!nextNavigationId) {
+      return
+    }
+
+    changeNavigation(nextNavigationId)
+  }
+
+  const mainSwipeGesture = useSwipeGesture({
+    onSwipeLeft: () => moveNavigationBySwipe(1),
+    onSwipeRight: () => moveNavigationBySwipe(-1),
+    shouldIgnoreSwipe: (event) => {
+      const target = event.target
+
+      return target instanceof Element && Boolean(target.closest('[data-swipe-back-root], .bottom_nav'))
+    },
+  })
+
   return (
-    <main className="main_page">
+    <main className="main_page" {...mainSwipeGesture}>
       <StatusBar />
       <section className="main_content" aria-label={mainTabTitles[activeNavigationId]}>
         {activeNavigationId === 'home' && <HomeScreen signupProfile={signupProfile} />}
@@ -431,7 +455,7 @@ function Main({
       </section>
       <BottomNavigation activeNavigationId={activeNavigationId} onChange={changeNavigation} />
       {isInstructorOverlayOpen && (
-        <div className="main_overlay_page">
+        <div className="main_overlay_page" data-swipe-back-root>
           <StatusBar />
           <FacilitiesScreen
             initialInstructorImage={initialInstructorImage}
@@ -723,13 +747,14 @@ type FacilitiesScreenProps = {
 
 function FacilitiesScreen({ initialInstructorImage = null, initialTabId, onBack }: FacilitiesScreenProps) {
   const [activeInfoTabId, setActiveInfoTabId] = useState<InfoTabId>(initialTabId)
+  const swipeBackGesture = useSwipeGesture({ onSwipeRight: onBack })
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0 })
   }, [activeInfoTabId])
 
   return (
-    <section className="facilities_page" aria-labelledby="facilities_page_title">
+    <section className="facilities_page" aria-labelledby="facilities_page_title" data-swipe-back-root {...swipeBackGesture}>
       <header className="facilities_header">
         <button className="facilities_back_button" type="button" aria-label="홈으로 돌아가기" onClick={onBack}>
           <img src={backIcon} alt="" />
@@ -857,6 +882,7 @@ type AlertScreenProps = {
 
 function AlertScreen({ studentName, onBack }: AlertScreenProps) {
   const [activeAlertTabId, setActiveAlertTabId] = useState<AlertTabId>('notice')
+  const swipeBackGesture = useSwipeGesture({ onSwipeRight: onBack })
   const [readAlertIds, setReadAlertIds] = useState<string[]>(() => {
     const defaultReadAlertIds = [
       ...alertItems.map((item) => item.id),
@@ -903,7 +929,7 @@ function AlertScreen({ studentName, onBack }: AlertScreenProps) {
   }
 
   return (
-    <section className="alert_page" aria-labelledby="alert_page_title">
+    <section className="alert_page" aria-labelledby="alert_page_title" data-swipe-back-root {...swipeBackGesture}>
       <header className="alert_header">
         <button className="alert_back_button" type="button" aria-label="홈으로 돌아가기" onClick={onBack}>
           <img src={backIcon} alt="" />

@@ -4,6 +4,7 @@ import backIcon from '../assets/svg/back.svg'
 import timeIcon from '../assets/svg/time.svg'
 import writeIcon from '../assets/svg/write.svg'
 import profileImage from '../assets/home/profile.png'
+import useSwipeGesture from '../hooks/useSwipeGesture'
 import type { SignupProfile } from '../data/signupData'
 import type { CompletedLessonApplication, CompletedShuttleApplication } from '../types/schedule'
 import '../style/my.css'
@@ -185,10 +186,16 @@ function ApplicationHistoryScreen({
   onBack,
 }: ApplicationHistoryScreenProps) {
   const [activeHistoryTabId, setActiveHistoryTabId] = useState<ApplicationHistoryTabId>('lesson')
+  const swipeBackGesture = useSwipeGesture({ onSwipeRight: onBack })
   const activeApplications = activeHistoryTabId === 'lesson' ? lessonApplications : shuttleApplications
 
   return (
-    <section className="application_history_page" aria-labelledby="application_history_title">
+    <section
+      className="application_history_page"
+      aria-labelledby="application_history_title"
+      data-swipe-back-root
+      {...swipeBackGesture}
+    >
       <header className="application_history_header">
         <button className="application_history_back" type="button" aria-label="마이페이지로 돌아가기" onClick={onBack}>
           <img src={backIcon} alt="" />

@@ -25,6 +25,7 @@ import rest11Image from '../assets/notice/rest11.jpg'
 import rest12Image from '../assets/notice/rest12.jpg'
 import instructor01Image from '../assets/facilities/in01.png'
 import instructor05Image from '../assets/facilities/in05.png'
+import useSwipeGesture from '../hooks/useSwipeGesture'
 import '../style/board.css'
 
 type BoardCategoryId = 'notice' | 'rest'
@@ -694,6 +695,7 @@ type BoardPostDetailProps = {
 
 function BoardPostDetail({ categoryLabel, post, selectedReactionId, onBack, onSelectReaction }: BoardPostDetailProps) {
   const [copyFeedback, setCopyFeedback] = useState('')
+  const swipeBackGesture = useSwipeGesture({ onSwipeRight: onBack })
   const contentLinks = getContentLinks(post.content)
   const copyTargets = getCopyTargets(post.content)
   const reactionSummary = reactionOptions
@@ -704,7 +706,7 @@ function BoardPostDetail({ categoryLabel, post, selectedReactionId, onBack, onSe
     .filter((reaction) => reaction.count > 0)
 
   return (
-    <div className="board_detail_page">
+    <div className="board_detail_page" data-swipe-back-root {...swipeBackGesture}>
       <header className="board_detail_header">
         <button className="board_detail_back" type="button" aria-label="게시판으로 돌아가기" onClick={onBack}>
           <img src={backIcon} alt="" />

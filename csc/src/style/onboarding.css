@@ -67,7 +67,17 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  pointer-events: none;
   transform: scale(1.6);
+}
+
+.onboarding_video::-webkit-media-controls,
+.onboarding_video::-webkit-media-controls-panel,
+.onboarding_video::-webkit-media-controls-play-button,
+.onboarding_video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  opacity: 0 !important;
+  -webkit-appearance: none;
 }
 
 .onboarding_title {

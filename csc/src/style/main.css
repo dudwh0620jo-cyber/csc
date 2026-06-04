@@ -283,6 +283,8 @@
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0;
+  color: var(--color-text-01);
+  -webkit-text-fill-color: var(--color-text-01);
 }
 
 .home_info_card p,

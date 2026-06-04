@@ -7,6 +7,7 @@ import timesandIcon from '../assets/svg/timesand.svg'
 import ScheduleCompleteModal from './ScheduleCompleteModal'
 import SignupBottomProfile from './SignupBottomProfile'
 import StatusBar from './StatusBar'
+import useSwipeGesture from '../hooks/useSwipeGesture'
 import type { ScheduleReservationSelection } from '../types/schedule'
 import { formatScheduleDate, formatScheduleDeadlineText } from '../utils/scheduleDate'
 
@@ -19,6 +20,7 @@ type ScheduleReservationDetailProps = {
 
 function ScheduleReservationDetail({ selection, onBack, onComplete, onOpenInstructorInfo }: ScheduleReservationDetailProps) {
   const [isCompletePopupOpen, setIsCompletePopupOpen] = useState(false)
+  const swipeBackGesture = useSwipeGesture({ onSwipeRight: onBack })
   const { date, lesson, time } = selection
   const waitingCount = lesson.canWait ? 1 : 0
   const deadlineText = formatScheduleDeadlineText(date)
@@ -29,7 +31,12 @@ function ScheduleReservationDetail({ selection, onBack, onComplete, onOpenInstru
   }
 
   return (
-    <section className="schedule_reservation_page" aria-labelledby="schedule_reservation_title">
+    <section
+      className="schedule_reservation_page"
+      aria-labelledby="schedule_reservation_title"
+      data-swipe-back-root
+      {...swipeBackGesture}
+    >
       <StatusBar />
       <header className="schedule_reservation_header">
         <button className="schedule_reservation_back" type="button" onClick={onBack}>

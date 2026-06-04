@@ -6,6 +6,7 @@ import timeIcon from '../assets/svg/time.svg'
 import ScheduleCompleteModal from './ScheduleCompleteModal'
 import SignupBottomProfile from './SignupBottomProfile'
 import StatusBar from './StatusBar'
+import useSwipeGesture from '../hooks/useSwipeGesture'
 import type { ShuttleScheduleSelection } from '../types/schedule'
 import { formatScheduleDeadlineText } from '../utils/scheduleDate'
 
@@ -19,6 +20,7 @@ function ShuttleScheduleChangeDetail({ selection, onBack, onComplete }: ShuttleS
   const [selectedChangeType, setSelectedChangeType] = useState<'self' | 'etc' | null>('self')
   const [etcChangeText, setEtcChangeText] = useState('')
   const [isCompletePopupOpen, setIsCompletePopupOpen] = useState(false)
+  const swipeBackGesture = useSwipeGesture({ onSwipeRight: onBack })
   const { date, shuttle } = selection
   const deadlineText = formatScheduleDeadlineText(date)
   const isSubmitDisabled = selectedChangeType === 'etc' && etcChangeText.trim().length === 0
@@ -29,7 +31,12 @@ function ShuttleScheduleChangeDetail({ selection, onBack, onComplete }: ShuttleS
   }
 
   return (
-    <section className="schedule_reservation_page shuttle_change_page" aria-labelledby="shuttle_change_title">
+    <section
+      className="schedule_reservation_page shuttle_change_page"
+      aria-labelledby="shuttle_change_title"
+      data-swipe-back-root
+      {...swipeBackGesture}
+    >
       <StatusBar />
       <header className="schedule_reservation_header">
         <button className="schedule_reservation_back" type="button" onClick={onBack}>
