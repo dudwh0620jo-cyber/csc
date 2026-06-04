@@ -130,34 +130,38 @@ function Onboarding({ onComplete, onDebugHome }: OnboardingProps) {
                 </button>
 
                 <div className="onboarding_visual" aria-hidden="true">
-                  <video
-                    className="onboarding_video"
-                    ref={(element) => {
-                      videoRefs.current[slideIndex] = element
+                  {slideIndex === currentSlideIndex && (
+                    <video
+                      className="onboarding_video"
+                      ref={(element) => {
+                        videoRefs.current[slideIndex] = element
 
-                      if (!element) {
-                        return
-                      }
+                        if (!element) {
+                          return
+                        }
 
-                      element.muted = true
-                      element.defaultMuted = true
-                      element.playsInline = true
-                      element.controls = false
-                      element.setAttribute('muted', '')
-                      element.setAttribute('playsinline', '')
-                      element.setAttribute('webkit-playsinline', '')
-                      element.removeAttribute('controls')
-                    }}
-                    autoPlay
-                    muted
-                    defaultMuted
-                    loop
-                    playsInline
-                    preload="auto"
-                    onCanPlay={slideIndex === currentSlideIndex ? playCurrentVideo : undefined}
-                  >
-                    <source src={onboardingItem.video} type="video/mp4" />
-                  </video>
+                        element.muted = true
+                        element.defaultMuted = true
+                        element.playsInline = true
+                        element.controls = false
+                        element.setAttribute('autoplay', '')
+                        element.setAttribute('muted', '')
+                        element.setAttribute('loop', '')
+                        element.setAttribute('playsinline', '')
+                        element.setAttribute('webkit-playsinline', '')
+                        element.removeAttribute('controls')
+                      }}
+                      autoPlay
+                      muted
+                      defaultMuted
+                      loop
+                      playsInline
+                      preload="auto"
+                      src={onboardingItem.video}
+                      onCanPlay={playCurrentVideo}
+                      onLoadedData={playCurrentVideo}
+                    />
+                  )}
                 </div>
 
                 <h1 className="onboarding_title">
