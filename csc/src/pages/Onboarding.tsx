@@ -1,22 +1,22 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import StatusBar from '../components/StatusBar'
-import onboardingFirstVideo from '../assets/onbording/onboarding01.mp4'
-import onboardingSecondVideo from '../assets/onbording/onboarding02.mp4'
-import onboardingThirdVideo from '../assets/onbording/onboarding03.mp4'
+import onboardingFirstGif from '../assets/onbording/onboarding01.gif'
+import onboardingSecondGif from '../assets/onbording/onboarding02.gif'
+import onboardingThirdGif from '../assets/onbording/onboarding03.gif'
 import handUpIcon from '../assets/svg/bxs_hand-up.svg'
 import '../style/onboarding.css'
 
 const onboardingItems = [
   {
-    video: onboardingFirstVideo,
+    image: onboardingFirstGif,
     title: ['아이의 안전을 위한', '필수 생존 능력'],
   },
   {
-    video: onboardingSecondVideo,
+    image: onboardingSecondGif,
     title: ['성장기에 가장 적합한', '전신 운동'],
   },
   {
-    video: onboardingThirdVideo,
+    image: onboardingThirdGif,
     title: ['안전과 위생을 최우선으로 한', '수영 환경'],
   },
 ]
@@ -31,34 +31,8 @@ type OnboardingProps = {
 function Onboarding({ onComplete, onDebugHome }: OnboardingProps) {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
   const [dragStartX, setDragStartX] = useState<number | null>(null)
-  const videoRefs = useRef<Array<HTMLVideoElement | null>>([])
 
   const lastSlideIndex = onboardingItems.length - 1
-
-  const playCurrentVideo = () => {
-    const currentVideo = videoRefs.current[currentSlideIndex]
-
-    if (!currentVideo) {
-      return
-    }
-
-    currentVideo.muted = true
-    currentVideo.defaultMuted = true
-    currentVideo.playsInline = true
-    currentVideo.controls = false
-    currentVideo.setAttribute('muted', '')
-    currentVideo.setAttribute('playsinline', '')
-    currentVideo.setAttribute('webkit-playsinline', '')
-    currentVideo.removeAttribute('controls')
-
-    void currentVideo.play().catch(() => {
-      // Mobile browsers can still block autoplay in power-saving modes.
-    })
-  }
-
-  useEffect(() => {
-    playCurrentVideo()
-  }, [currentSlideIndex])
 
   const moveToPreviousSlide = () => {
     setCurrentSlideIndex((previousIndex) => Math.max(previousIndex - 1, 0))
@@ -122,7 +96,7 @@ function Onboarding({ onComplete, onDebugHome }: OnboardingProps) {
             <article
               className="onboarding_slide"
               aria-hidden={slideIndex !== currentSlideIndex}
-              key={onboardingItem.video}
+              key={onboardingItem.image}
             >
               <div className="onboarding_inner">
                 <button className="onboarding_skip" type="button" onClick={onComplete}>
@@ -130,38 +104,7 @@ function Onboarding({ onComplete, onDebugHome }: OnboardingProps) {
                 </button>
 
                 <div className="onboarding_visual" aria-hidden="true">
-                  {slideIndex === currentSlideIndex && (
-                    <video
-                      className="onboarding_video"
-                      ref={(element) => {
-                        videoRefs.current[slideIndex] = element
-
-                        if (!element) {
-                          return
-                        }
-
-                        element.muted = true
-                        element.defaultMuted = true
-                        element.playsInline = true
-                        element.controls = false
-                        element.setAttribute('autoplay', '')
-                        element.setAttribute('muted', '')
-                        element.setAttribute('loop', '')
-                        element.setAttribute('playsinline', '')
-                        element.setAttribute('webkit-playsinline', '')
-                        element.removeAttribute('controls')
-                      }}
-                      autoPlay
-                      muted
-                      defaultMuted
-                      loop
-                      playsInline
-                      preload="auto"
-                      src={onboardingItem.video}
-                      onCanPlay={playCurrentVideo}
-                      onLoadedData={playCurrentVideo}
-                    />
-                  )}
+                  <img className="onboarding_gif" src={onboardingItem.image} alt="" draggable={false} />
                 </div>
 
                 <h1 className="onboarding_title">
