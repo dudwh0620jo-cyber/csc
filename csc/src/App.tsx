@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Login from './pages/Login'
 import Main from './pages/Main'
 import Onboarding from './pages/Onboarding'
@@ -9,7 +9,83 @@ import type { CompletedLessonApplication, CompletedShuttleApplication } from './
 
 type AppView = 'splash' | 'onboarding' | 'login' | 'signup' | 'profile_edit' | 'main'
 
+const findScrollableParent = (target: EventTarget | null) => {
+  if (!(target instanceof Element)) {
+    return null
+  }
+
+  let currentElement: Element | null = target
+
+  while (currentElement && currentElement !== document.body) {
+    const style = window.getComputedStyle(currentElement)
+    const canScrollY = /(auto|scroll)/.test(style.overflowY)
+
+    if (canScrollY && currentElement.scrollHeight > currentElement.clientHeight) {
+      return currentElement
+    }
+
+    currentElement = currentElement.parentElement
+  }
+
+  return document.getElementById('root')
+}
+
+const usePreventOverscrollBounce = () => {
+  useEffect(() => {
+    let touchStartX = 0
+    let touchStartY = 0
+
+    const handleTouchStart = (event: TouchEvent) => {
+      const firstTouch = event.touches[0]
+
+      touchStartX = firstTouch.clientX
+      touchStartY = firstTouch.clientY
+    }
+
+    const handleTouchMove = (event: TouchEvent) => {
+      if (event.touches.length !== 1) {
+        return
+      }
+
+      const firstTouch = event.touches[0]
+      const deltaX = firstTouch.clientX - touchStartX
+      const deltaY = firstTouch.clientY - touchStartY
+
+      if (Math.abs(deltaY) <= Math.abs(deltaX)) {
+        return
+      }
+
+      const scrollableElement = findScrollableParent(event.target)
+
+      if (!scrollableElement) {
+        event.preventDefault()
+        return
+      }
+
+      const isPullingDown = deltaY > 0
+      const isPushingUp = deltaY < 0
+      const isAtTop = scrollableElement.scrollTop <= 0
+      const isAtBottom =
+        scrollableElement.scrollTop + scrollableElement.clientHeight >= scrollableElement.scrollHeight - 1
+
+      if ((isPullingDown && isAtTop) || (isPushingUp && isAtBottom)) {
+        event.preventDefault()
+      }
+    }
+
+    document.addEventListener('touchstart', handleTouchStart, { passive: true })
+    document.addEventListener('touchmove', handleTouchMove, { passive: false })
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart)
+      document.removeEventListener('touchmove', handleTouchMove)
+    }
+  }, [])
+}
+
 function App() {
+  usePreventOverscrollBounce()
+
   const [currentView, setCurrentView] = useState<AppView>('splash')
   const [signupProfile, setSignupProfile] = useState<SignupProfile>(initialSignupProfile)
   const [verifiedPhoneFields, setVerifiedPhoneFields] = useState<Array<keyof SignupProfile>>([
