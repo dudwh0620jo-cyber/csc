@@ -19,7 +19,7 @@
   justify-content: center;
   width: 100%;
   min-height: 100dvh;
-  padding: 120px 18px 0;
+  padding: calc(120px - var(--app-status-bar-offset)) 18px 0;
 }
 
 .login_content {
@@ -275,7 +275,7 @@
 
 @media (max-width: 360px) {
   .login_inner {
-    padding-top: 96px;
+    padding-top: calc(96px - var(--app-status-bar-offset));
   }
 
   .login_content {

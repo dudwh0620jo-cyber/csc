@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import StatusBar from '../components/StatusBar'
 import onboardingFirstVideo from '../assets/onbording/onboarding01.mp4'
 import onboardingSecondVideo from '../assets/onbording/onboarding02.mp4'
@@ -31,8 +31,29 @@ type OnboardingProps = {
 function Onboarding({ onComplete, onDebugHome }: OnboardingProps) {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
   const [dragStartX, setDragStartX] = useState<number | null>(null)
+  const videoRefs = useRef<Array<HTMLVideoElement | null>>([])
 
   const lastSlideIndex = onboardingItems.length - 1
+
+  const playCurrentVideo = () => {
+    const currentVideo = videoRefs.current[currentSlideIndex]
+
+    if (!currentVideo) {
+      return
+    }
+
+    currentVideo.muted = true
+    currentVideo.defaultMuted = true
+    currentVideo.playsInline = true
+
+    void currentVideo.play().catch(() => {
+      // Mobile browsers can still block autoplay in power-saving modes.
+    })
+  }
+
+  useEffect(() => {
+    playCurrentVideo()
+  }, [currentSlideIndex])
 
   const moveToPreviousSlide = () => {
     setCurrentSlideIndex((previousIndex) => Math.max(previousIndex - 1, 0))
@@ -106,10 +127,16 @@ function Onboarding({ onComplete, onDebugHome }: OnboardingProps) {
                 <div className="onboarding_visual" aria-hidden="true">
                   <video
                     className="onboarding_video"
+                    ref={(element) => {
+                      videoRefs.current[slideIndex] = element
+                    }}
                     autoPlay
                     muted
+                    defaultMuted
                     loop
                     playsInline
+                    preload="auto"
+                    onCanPlay={slideIndex === currentSlideIndex ? playCurrentVideo : undefined}
                   >
                     <source src={onboardingItem.video} type="video/mp4" />
                   </video>

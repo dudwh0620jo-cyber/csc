@@ -36,7 +36,7 @@
   align-items: center;
   width: 100%;
   min-height: 100dvh;
-  padding: 65px 18px 0;
+  padding: calc(65px - var(--app-status-bar-offset)) 18px 0;
 }
 
 .onboarding_skip {

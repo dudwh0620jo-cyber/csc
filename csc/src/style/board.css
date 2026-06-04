@@ -1,7 +1,7 @@
 .board_page {
   width: 100%;
   min-height: 100dvh;
-  padding: 90px 15px 100px;
+  padding: calc(90px - var(--app-status-bar-offset)) 15px 100px;
   background: var(--color-bg-01);
 }
 
@@ -406,7 +406,7 @@
 .board_detail_page {
   width: 100%;
   min-height: 100dvh;
-  padding: 50px 15px 102px;
+  padding: calc(50px - var(--app-status-bar-offset)) 15px 102px;
   background: var(--color-bg-01);
 }
 

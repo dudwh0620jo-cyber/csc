@@ -1,7 +1,7 @@
 .my_page {
   width: 100%;
   min-height: 100dvh;
-  padding: 90px 18px 133px;
+  padding: calc(90px - var(--app-status-bar-offset)) 18px 133px;
   background: var(--color-bg-01);
 }
 
@@ -131,7 +131,7 @@
 .application_history_page {
   width: 100%;
   min-height: 100dvh;
-  padding: 50px 0 133px;
+  padding: calc(50px - var(--app-status-bar-offset)) 0 133px;
   background: var(--color-bg-01);
 }
 

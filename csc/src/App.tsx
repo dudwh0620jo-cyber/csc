@@ -9,6 +9,29 @@ import type { CompletedLessonApplication, CompletedShuttleApplication } from './
 
 type AppView = 'splash' | 'onboarding' | 'login' | 'signup' | 'profile_edit' | 'main'
 
+const isAndroidOrIosDevice = () => {
+  if (typeof navigator === 'undefined') {
+    return false
+  }
+
+  const userAgent = navigator.userAgent.toLowerCase()
+  const platform = navigator.platform.toLowerCase()
+  const isAndroid = userAgent.includes('android')
+  const isIos = /iphone|ipad|ipod/.test(userAgent) || (/mac/.test(platform) && navigator.maxTouchPoints > 1)
+
+  return isAndroid || isIos
+}
+
+const useStatusBarClass = () => {
+  useEffect(() => {
+    document.documentElement.classList.toggle('app_no_status_bar', isAndroidOrIosDevice())
+
+    return () => {
+      document.documentElement.classList.remove('app_no_status_bar')
+    }
+  }, [])
+}
+
 const findScrollableParent = (target: EventTarget | null) => {
   if (!(target instanceof Element)) {
     return null
@@ -84,6 +107,7 @@ const usePreventOverscrollBounce = () => {
 }
 
 function App() {
+  useStatusBarClass()
   usePreventOverscrollBounce()
 
   const [currentView, setCurrentView] = useState<AppView>('splash')
